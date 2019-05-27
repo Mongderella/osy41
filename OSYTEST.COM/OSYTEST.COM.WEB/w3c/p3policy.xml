@@ -1,0 +1,606 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<POLICIES xmlns="http://www.w3.org/2002/01/P3Pv1">
+	<DATASCHEMA>
+		<DATA-DEF name="dynamic.cookies" short-description="쿠키">
+			<CATEGORIES>
+			<state/>
+			</CATEGORIES>
+		</DATA-DEF>
+		<DATA-DEF name="user.login.question" short-description="비밀번호 질문">
+			<CATEGORIES>
+			<online/>
+			</CATEGORIES>
+		</DATA-DEF>
+		<DATA-DEF name="user.home-info.postal" short-description="자택주소">
+			<CATEGORIES>
+			<physical/>
+			</CATEGORIES>
+		</DATA-DEF>
+		<DATA-DEF name="user.home-info.telecom.mobile" short-description="휴대전화번호">
+			<CATEGORIES>
+			<physical/>
+			</CATEGORIES>
+		</DATA-DEF>
+		<DATA-DEF name="user.business-info.department" short-description="회사명 ">
+			<CATEGORIES>
+			<demographic/>
+			</CATEGORIES>
+		</DATA-DEF>
+		<DATA-DEF name="user.business-info.postal.name" short-description="회사명 ">
+			<CATEGORIES>
+			<demographic/>
+			</CATEGORIES>
+		</DATA-DEF>
+		<DATA-DEF name="user.job-type" short-description="직업종류">
+			<CATEGORIES>
+			<physical/>
+			</CATEGORIES>
+		</DATA-DEF>
+		<DATA-DEF name="user.social-number" short-description="주민등록번호">
+			<CATEGORIES>
+			<government/>
+			</CATEGORIES>
+		</DATA-DEF>
+		<DATA-DEF name="user.hobby" short-description="취미">
+			<CATEGORIES>
+			<physical/>
+			</CATEGORIES>
+		</DATA-DEF>
+		<DATA-DEF name="user.religion" short-description="거주지역">
+			<CATEGORIES>
+			<demographic/>
+			</CATEGORIES>
+		</DATA-DEF>
+		<DATA-DEF name="user.wedding.wedding-y-or-n" short-description="기혼여부">
+			<CATEGORIES>
+			<physical/>
+			</CATEGORIES>
+		</DATA-DEF>
+		<DATA-DEF name="user.anniversary" short-description="기념일">
+			<CATEGORIES>
+			<physical/>
+			</CATEGORIES>
+		</DATA-DEF>
+		<DATA-DEF name="user.school-carrier" short-description="학력">
+			<CATEGORIES>
+			<physical/>
+			</CATEGORIES>
+		</DATA-DEF>
+		<DATA-DEF name="user.body" short-description="신체정보">
+			<CATEGORIES>
+			<health/>
+			</CATEGORIES>
+		</DATA-DEF>
+		<DATA-DEF name="user.credit-card" short-description="신용카드 정보">
+			<CATEGORIES>
+			<financial/>
+			</CATEGORIES>
+		</DATA-DEF>
+		<DATA-DEF name="user.account" short-description="금융계좌 정보">
+			<CATEGORIES>
+			<financial/>
+			</CATEGORIES>
+		</DATA-DEF>
+		<DATA-DEF name="dynamic.payment" short-description="결제 기록">
+			<CATEGORIES>
+			<purchase/>
+			</CATEGORIES>
+		</DATA-DEF>
+		<DATA-DEF name="user.agent" short-description="대리인 정보">
+			<CATEGORIES>
+			<other-category> 대리인 정보</other-category>
+			</CATEGORIES>
+		</DATA-DEF>
+		<DATA-DEF name="user.other-contents" short-description="기타 정보">
+			<CATEGORIES>
+			<other-category>기타 정보</other-category>
+			</CATEGORIES>
+		</DATA-DEF>
+	</DATASCHEMA>
+	<POLICY name="tourinterpark" opturi="http://TOUR.THETRAVEL.CO.KR" discuri="http://www.interpark.com/gate/info/protect_privacy.html" >
+		<ENTITY>
+			<DATA-GROUP>
+				<DATA ref="#business.name">(주)인터파크투어</DATA>
+				<DATA ref="#business.contact-info.online.uri">http://TOUR.THETRAVEL.CO.KR</DATA>
+			</DATA-GROUP>
+		</ENTITY>
+		<ACCESS>
+			<all/>
+			<EXTENSION optional="no">
+				<USER-RIGHT>
+					이용자 및 법정 대리인은 언제든지 등록되어 있는 자신 혹은 당해 만 14세 미만
+아동의 개인정보를 조회하거나 수정할 수 있으며 가입해지를 요청할 수도 있습니
+다.
+이용자 혹은 만 14세 미만 아동의 개인정보 조회?수정을 위해서는 ‘개인정보변
+경’(또는 ‘회원정보수정’ 등)을 가입해지(동의철회)를 위해서는 “회원탈퇴”를 클릭
+하여 본인 확인 절차를 거치신 후 직접 열람, 정정 또는 탈퇴가 가능합니다.
+혹은 개인정보관리책임자에게 서면, 전화 또는 이메일로 연락하시면 지체없이 조
+치하겠습니다.
+귀하가 개인정보의 오류에 대한 정정을 요청하신 경우에는 정정을 완료하기 전까
+지 당해 개인정보를 이용 또는 제공하지 않습니다. 또한 잘못된 개인정보를 제3자
+에게 이미 제공한 경우에는 정정 처리결과를 제3자에게 지체없이 통지하여 정정이
+이루어지도록 하겠습니다.
+oo는 이용자 혹은 법정 대리인의 요청에 의해 해지 또는 삭제된 개인정보는 “oo
+가 수집하는 개인정보의 보유 및 이용기간”에 명시된 바에 따라 처리하고 그 외의
+용도로 열람 또는 이용할 수 없도록 처리하고 있습니다.
+				</USER-RIGHT>
+				<advertising>
+				<option/>
+				</advertising>
+			</EXTENSION>
+		</ACCESS>
+		<DISPUTES-GROUP>
+			<DISPUTES resolution-type="service" service="http://www.interpark.com/gate/info/protect_privacy.html" short-description="인터파크투어">
+				<EXTENSION optional="no">
+					<DATA ref="#business.cpo.name">조동현</DATA>
+					<DATA ref="#business.cpo.email">tourcpo@interpark.com</DATA>
+					<DATA ref="#business.cpo.telephone">6670-3616</DATA>
+				</EXTENSION>
+				<REMEDIES><correct/><money/><law/></REMEDIES>
+			</DISPUTES>
+		</DISPUTES-GROUP>
+		<STATEMENT>
+			<EXTENSION optional="no">
+				<COLLECTION-METHOD>
+					<other-method>
+					<website/>
+					</other-method>
+				</COLLECTION-METHOD>
+				<DESTRUCTION-METHOD>
+					<format/>
+				</DESTRUCTION-METHOD>
+			</EXTENSION>
+			<PURPOSE>
+				<individual-decision/><develop/>
+				
+				<EXTENSION optional="no">
+					<PPURPOSE>
+						<payment/><delivery/><finmgt/><login/><session/><marketing/>
+					</PPURPOSE>
+					<content/><cert/><complaint/><statement/>
+				</EXTENSION>
+			</PURPOSE>
+			<RECIPIENT>
+				<ours></ours>
+				<EXTENSION optional="no">
+				<same required="opt-in">
+				</same>
+					<recipient-description>
+						<content/><payment/><delivery/><finmgt/><cert/><login/><session/><individual-decision/><complaint/><statement/><develop/><marketing/>
+					</recipient-description>
+					<recipient-name>
+						(주)인터파크,인터파크쇼핑,인터파크도서,인터파크ENT
+					</recipient-name>
+					<recipient-duration>
+						<five-year/>
+					</recipient-duration>
+				</EXTENSION>
+				<EXTENSION optional="no">
+				<same required="opt-in">
+				</same>
+					<recipient-description>
+						<develop/><marketing/>
+					</recipient-description>
+					<recipient-name>
+						흥국생명,동부화재,미래에셋생명보험,멤플러스,삼성카드
+					</recipient-name>
+					<recipient-duration>
+						<instance/>
+					</recipient-duration>
+				</EXTENSION>
+				<EXTENSION optional="no">
+				<delivery required="opt-in">
+				</delivery>
+					<recipient-description>
+						<payment/><delivery/><finmgt/><cert/><complaint/><statement/><warranty/><agency/>
+					</recipient-description>
+					<recipient-name>
+						모두투어
+					</recipient-name>
+				</EXTENSION>
+				<EXTENSION optional="no">
+				<delivery required="opt-in">
+				</delivery>
+					<recipient-description>
+						<cert/><complaint/><statement/><warranty/>
+					</recipient-description>
+					<recipient-name>
+						인터파크고객서비스
+					</recipient-name>
+				</EXTENSION>
+			</RECIPIENT>
+			<RETENTION>
+				<legal-requirement/>
+				<EXTENSION optional="no">
+					<use-duration>
+											<instance/>
+
+					</use-duration>
+					<retention-basis>
+					</retention-basis>
+				</EXTENSION>
+			</RETENTION>
+			<DATA-GROUP>
+				<DATA ref="#user.name"/>
+				<DATA ref="#user.home-info.telecom.telephone"/>
+				<DATA ref="#user.home-info.telecom.mobile"/>
+			</DATA-GROUP>
+		</STATEMENT>
+		<STATEMENT>
+			<EXTENSION optional="no">
+				<COLLECTION-METHOD>
+					<other-method>
+					<website/>
+					</other-method>
+				</COLLECTION-METHOD>
+				<DESTRUCTION-METHOD>
+					<format/>
+				</DESTRUCTION-METHOD>
+			</EXTENSION>
+			<PURPOSE>
+				<other-purpose>추가설명</other-purpose>
+				
+				
+				<EXTENSION optional="no">
+					<PPURPOSE>
+						
+					</PPURPOSE>
+					<content/>
+				</EXTENSION>
+			</PURPOSE>
+			<RECIPIENT>
+				<ours></ours>
+				<EXTENSION optional="no">
+				<same required="opt-in">
+				</same>
+					<recipient-description>
+						<content/><payment/><delivery/><finmgt/><cert/><login/><session/><individual-decision/><complaint/><statement/><develop/><marketing/>
+					</recipient-description>
+					<recipient-name>
+						(주)인터파크,인터파크쇼핑,인터파크도서,인터파크ENT
+					</recipient-name>
+					<recipient-duration>
+						<five-year/>
+					</recipient-duration>
+				</EXTENSION>
+				<EXTENSION optional="no">
+				<delivery required="opt-in">
+				</delivery>
+					<recipient-description>
+						<payment/><delivery/><finmgt/><cert/><complaint/><statement/><warranty/><agency/>
+					</recipient-description>
+					<recipient-name>
+						모두투어
+					</recipient-name>
+				</EXTENSION>
+				<EXTENSION optional="no">
+				<delivery required="opt-in">
+				</delivery>
+					<recipient-description>
+						<cert/><complaint/><statement/><warranty/>
+					</recipient-description>
+					<recipient-name>
+						인터파크고객서비스
+					</recipient-name>
+				</EXTENSION>
+			</RECIPIENT>
+			<RETENTION>
+				<legal-requirement/>
+				<EXTENSION optional="no">
+					<use-duration>
+											<instance/>
+
+					</use-duration>
+					<retention-basis>
+					</retention-basis>
+				</EXTENSION>
+			</RETENTION>
+			<DATA-GROUP>
+				<DATA ref="#user.bdate"/>
+			</DATA-GROUP>
+		</STATEMENT>
+		<STATEMENT>
+			<EXTENSION optional="no">
+				<COLLECTION-METHOD>
+					<other-method>
+					<website/>
+					</other-method>
+				</COLLECTION-METHOD>
+				<DESTRUCTION-METHOD>
+					<format/>
+				</DESTRUCTION-METHOD>
+			</EXTENSION>
+			<PURPOSE>
+				<other-purpose>추가설명</other-purpose>
+				
+				
+				<EXTENSION optional="no">
+					<PPURPOSE>
+						
+					</PPURPOSE>
+					<content/>
+				</EXTENSION>
+			</PURPOSE>
+			<RECIPIENT>
+				<ours></ours>
+				<EXTENSION optional="no">
+				<same required="opt-in">
+				</same>
+					<recipient-description>
+						<content/><payment/><delivery/><finmgt/><cert/><login/><session/><individual-decision/><complaint/><statement/><develop/><marketing/>
+					</recipient-description>
+					<recipient-name>
+						(주)인터파크,인터파크쇼핑,인터파크도서,인터파크ENT
+					</recipient-name>
+					<recipient-duration>
+						<five-year/>
+					</recipient-duration>
+				</EXTENSION>
+				<EXTENSION optional="no">
+				<delivery required="opt-in">
+				</delivery>
+					<recipient-description>
+						<payment/><delivery/><finmgt/><cert/><complaint/><statement/><warranty/><agency/>
+					</recipient-description>
+					<recipient-name>
+						모두투어
+					</recipient-name>
+				</EXTENSION>
+				<EXTENSION optional="no">
+				<delivery required="opt-in">
+				</delivery>
+					<recipient-description>
+						<cert/><complaint/><statement/><warranty/>
+					</recipient-description>
+					<recipient-name>
+						인터파크고객서비스
+					</recipient-name>
+				</EXTENSION>
+			</RECIPIENT>
+			<RETENTION>
+				<legal-requirement/>
+				<EXTENSION optional="no">
+					<use-duration>
+											<five-year/>
+
+					</use-duration>
+					<retention-basis>
+					<e-trade-law><five-year/></e-trade-law>
+					</retention-basis>
+				</EXTENSION>
+			</RETENTION>
+			<DATA-GROUP base="">
+				<DATA ref="#user.social-number"/>
+			</DATA-GROUP>
+			<DATA-GROUP>
+				<DATA ref="#user.login.id"/>
+				<DATA ref="#user.home-info.postal"/>
+				<DATA ref="#dynamic.clientevents"/>
+			</DATA-GROUP>
+		</STATEMENT>
+		<STATEMENT>
+			<EXTENSION optional="no">
+				<COLLECTION-METHOD>
+					<other-method>
+					<website/>
+					</other-method>
+				</COLLECTION-METHOD>
+				<DESTRUCTION-METHOD>
+					<format/>
+				</DESTRUCTION-METHOD>
+			</EXTENSION>
+			<PURPOSE>
+				<other-purpose>추가설명</other-purpose>
+				
+				
+				<EXTENSION optional="no">
+					<PPURPOSE>
+						
+					</PPURPOSE>
+					<content/>
+				</EXTENSION>
+			</PURPOSE>
+			<RECIPIENT>
+				<ours></ours>
+				<EXTENSION optional="no">
+				<delivery required="opt-in">
+				</delivery>
+					<recipient-description>
+						<payment/><delivery/><finmgt/><cert/><complaint/><statement/><warranty/><agency/>
+					</recipient-description>
+					<recipient-name>
+						모두투어
+					</recipient-name>
+				</EXTENSION>
+				<EXTENSION optional="no">
+				<delivery required="opt-in">
+				</delivery>
+					<recipient-description>
+						<cert/><complaint/><statement/><warranty/>
+					</recipient-description>
+					<recipient-name>
+						인터파크고객서비스
+					</recipient-name>
+				</EXTENSION>
+			</RECIPIENT>
+			<RETENTION>
+				<legal-requirement/>
+				<EXTENSION optional="no">
+					<use-duration>
+											<instance/>
+
+					</use-duration>
+					<retention-basis>
+					</retention-basis>
+				</EXTENSION>
+			</RETENTION>
+			<DATA-GROUP base="">
+				<DATA ref="#user.login.question"/>
+				<DATA ref="#dynamic.cookies"/>
+			</DATA-GROUP>
+			<DATA-GROUP>
+				<DATA ref="#user.login.password"/>
+			</DATA-GROUP>
+		</STATEMENT>
+		<STATEMENT>
+			<EXTENSION optional="no">
+				<COLLECTION-METHOD>
+					<other-method>
+					<website/>
+					</other-method>
+				</COLLECTION-METHOD>
+				<DESTRUCTION-METHOD>
+					<format/>
+				</DESTRUCTION-METHOD>
+			</EXTENSION>
+			<PURPOSE>
+				<other-purpose>추가설명</other-purpose>
+				
+				
+				<EXTENSION optional="no">
+					<PPURPOSE>
+						
+					</PPURPOSE>
+					<content/>
+				</EXTENSION>
+			</PURPOSE>
+			<RECIPIENT>
+				<ours></ours>
+				<EXTENSION optional="no">
+				<same required="opt-in">
+				</same>
+					<recipient-description>
+						<content/><payment/><delivery/><finmgt/><cert/><login/><session/><individual-decision/><complaint/><statement/><develop/><marketing/>
+					</recipient-description>
+					<recipient-name>
+						(주)인터파크,인터파크쇼핑,인터파크도서,인터파크ENT
+					</recipient-name>
+					<recipient-duration>
+						<five-year/>
+					</recipient-duration>
+				</EXTENSION>
+				<EXTENSION optional="no">
+				<same required="opt-in">
+				</same>
+					<recipient-description>
+						<develop/><marketing/>
+					</recipient-description>
+					<recipient-name>
+						흥국생명,동부화재,미래에셋생명보험,멤플러스,삼성카드
+					</recipient-name>
+					<recipient-duration>
+						<instance/>
+					</recipient-duration>
+				</EXTENSION>
+				<EXTENSION optional="no">
+				<delivery required="opt-in">
+				</delivery>
+					<recipient-description>
+						<payment/><delivery/><finmgt/><cert/><complaint/><statement/><warranty/><agency/>
+					</recipient-description>
+					<recipient-name>
+						모두투어
+					</recipient-name>
+				</EXTENSION>
+				<EXTENSION optional="no">
+				<delivery required="opt-in">
+				</delivery>
+					<recipient-description>
+						<cert/><complaint/><statement/><warranty/>
+					</recipient-description>
+					<recipient-name>
+						인터파크고객서비스
+					</recipient-name>
+				</EXTENSION>
+			</RECIPIENT>
+			<RETENTION>
+				<legal-requirement/>
+				<EXTENSION optional="no">
+					<use-duration>
+											<five-year/>
+
+					</use-duration>
+					<retention-basis>
+					<e-trade-law><five-year/></e-trade-law>
+					</retention-basis>
+				</EXTENSION>
+			</RETENTION>
+			<DATA-GROUP>
+				<DATA ref="#user.home-info.online.email"/>
+			</DATA-GROUP>
+		</STATEMENT>
+		<STATEMENT>
+			<EXTENSION optional="no">
+				<COLLECTION-METHOD>
+					<other-method>
+					<website/>
+					</other-method>
+				</COLLECTION-METHOD>
+				<DESTRUCTION-METHOD>
+					<format/>
+				</DESTRUCTION-METHOD>
+			</EXTENSION>
+			<PURPOSE>
+				<other-purpose>추가설명</other-purpose>
+				
+				
+				<EXTENSION optional="no">
+					<PPURPOSE>
+						
+					</PPURPOSE>
+					<content/>
+				</EXTENSION>
+			</PURPOSE>
+			<RECIPIENT>
+				<ours></ours>
+				<EXTENSION optional="no">
+				<delivery required="opt-in">
+				</delivery>
+					<recipient-description>
+						<payment/><delivery/><finmgt/><cert/><complaint/><statement/><warranty/><agency/>
+					</recipient-description>
+					<recipient-name>
+						모두투어
+					</recipient-name>
+				</EXTENSION>
+				<EXTENSION optional="no">
+				<delivery required="opt-in">
+				</delivery>
+					<recipient-description>
+						<cert/><complaint/><statement/><warranty/>
+					</recipient-description>
+					<recipient-name>
+						인터파크고객서비스
+					</recipient-name>
+				</EXTENSION>
+			</RECIPIENT>
+			<RETENTION>
+				<legal-requirement/>
+				<EXTENSION optional="no">
+					<use-duration>
+											<five-year/>
+
+					</use-duration>
+					<retention-basis>
+					<e-trade-law><five-year/></e-trade-law>
+					</retention-basis>
+				</EXTENSION>
+			</RETENTION>
+			<DATA-GROUP base="">
+				<DATA ref="#dynamic.payment"/>
+			</DATA-GROUP>
+			<DATA-GROUP>
+				<DATA ref="#dynamic.interactionrecord"/>
+			</DATA-GROUP>
+		</STATEMENT>
+		<STATEMENT>
+<NON-IDENTIFIABLE>인터파크투어는 다른 많은 웹사이트와 마찬가지로 쿠키를 운용합니다. 
+''쿠키(cookie)''는 회원님에 대한 정보를 저장하고 수시로 찾아내는 역할을 합니다. 그리고, 웹사이트가 회원님의 컴퓨터 브라우저(넷스케이프, 인터넷 익스플로러 등)로 전송하는 4KB 미만의 텍스트로 이뤄진 소량의 정보입니다. 
+
+회원께서 회원사의 웹사이트에 접속을 하시면, 회원사의 컴퓨터는 회원님의 브라우저에 있는 쿠키의 내용을 읽고, 회원의 추가정보를 회원님의 컴퓨터에서 찾아 접속에 따른 성명 등의 추가 입력 없이 서비스를 제공할 수 있습니다. 쿠키는 회원님의 컴퓨터만을 식별하고 회원님을 개인적으로 식별하지는 않습니다. 
+
+회원께서는 쿠키에 대한 선택권이 있으며, 다음과 같은 방법으로 쿠키의 전부 또는 일부를 받아들여 웹 브라우저 상단의 “도구 &gt; 인터넷옵션&gt;개인정보&gt;개인정보 설정”에서 “모든쿠키허용-낮음-보통-보통 높음-높음-모든쿠키차단”을 할 수 있는 선택권을 가질 수 있습니다. 그러나, 회원님께서 쿠키에 대한 설치를 거부하거나 삭제로 설정한 경우에는 해당 웹 페이지에 일정부분에 대해서 접근할 때마다 회원님의 아이디(ID)나 비밀번호(password)를 다시 입력하셔야 합니다. 
+
+회원사는 이용자의 편의를 위하여 쿠키를 운영하며. 회원사가 쿠키를 통해 수집하는 정보는 회원 ID에 한하며, 그 외의 다른 정보는 수집하지 않습니다. 쿠키는 브라우저의 종료 시나 로그아웃 시 만료됩니다.</NON-IDENTIFIABLE>		</STATEMENT>
+	</POLICY>
+</POLICIES>

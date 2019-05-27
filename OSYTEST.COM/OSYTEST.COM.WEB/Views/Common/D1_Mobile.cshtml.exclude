@@ -1,0 +1,546 @@
+﻿@using INTERPARKTOUR.UTIL;
+
+@{ 
+    Layout = "~/Views/Shared/_Layout_Mobile.cshtml";
+
+    try
+    {
+        if (ViewBag.CateCD == null)
+        {
+            ViewBag.CateCD = 0;
+        }
+    }
+    catch (Exception ex)
+    {
+        TOUR.THETRAVEL.CO.KR.WEB.App_Code.Common.HelperNLog.WriteNLog4Views(Request.Url.OriginalString, ex.ToString());
+    }
+}
+
+
+@model string
+
+
+@section StyleInLayout{
+
+    <link rel="stylesheet" href="@HelperFile.GetJsWithVersionCode(ViewBag._MtourDomain + "/css/travel/travelMain.css")">
+
+    <style type="text/css">
+        .unvisibleParent {
+          display:none;
+        }
+    </style>
+}
+
+
+@section ScriptInLayout{
+
+    <!-- Document Write With Async load Js files (Floating.js) -->
+    <script type="text/javascript" src="//www.googleadservices.com/pagead/conversion_async.js" charset="utf-8"></script>
+    <script src="@HelperFile.GetJsWithVersionCode(ViewBag._MtourDomain + "/js/common/floating.js")"></script>
+
+    <script type="text/javascript">
+
+        var jsonForView = @Html.Raw(Model.ToString());
+
+        var defaultTabListShowCount = 3;
+
+        // Tab 명 가져오기
+        var jsonGoodsGroupForTabSection = new Array();
+        if (jsonForView.GoodsGroupsForTagSection != null && jsonForView.GoodsGroupsForTagSection.length > 0)
+        {
+            $.each(jsonForView.GoodsGroupsForTagSection, function (index, item) {
+                jsonGoodsGroupForTabSection.push(item[0].Goods_G_D);
+            });
+        }
+
+        // 현재 LNB 메뉴 위치 이동
+        function SelectCurrentMenu(){
+            if(@ViewBag.CateCD != 0){
+                var menuOffsetLeft = $('.headerMenu ul li[data-catecd="@ViewBag.CateCD"]').offset().left - 50;
+                //$('.headerMenu > article.scroll-content').css('transform', 'translate3d(-' + menuOffsetLeft + 'px, 0px, 0px)');
+                var scroll = Scrollbar.get(document.getElementById('lnbSlide'));
+                scroll.setPosition(menuOffsetLeft, 0)
+            }
+        }
+
+        // 카테고리 뷰 위치 이동
+        function SelectCurrentCategory(){
+
+            // 현재 카테고리의 최상단 Root 카테고리로 스크롤 위치 이동
+            var rootCateCD = $('#hddRootCateCD').val();
+
+            if(rootCateCD != undefined && rootCateCD != ''){
+
+                if($('.themeInner.overseas li[data-catecd="'+rootCateCD+'"]').length > 0){
+                    var overLeft = $('.themeInner.overseas li[data-catecd="'+rootCateCD+'"]').offset().left - 50;
+                    var overScroll = Scrollbar.get(document.getElementById('overseaSlide'));
+                    overScroll.setPosition(overLeft, 0)
+                }
+
+                if($('.themeInner.domestic li[data-catecd="'+rootCateCD+'"]').length > 0){
+                    var domLeft = $('.themeInner.domestic li[data-catecd="'+rootCateCD+'"]').offset().left - 50;
+                    var domScroll = Scrollbar.get(document.getElementById('domSlide'));
+                    domScroll.setPosition(domLeft, 0)
+                }
+            }
+        }
+
+        // 상품 그룹의 상품 개수가 4개 이상일 때 영역 높이 제어
+        function SetGoodsGroupAllTabListStyle(){
+
+            var arrayUl = $('.productsWrap ul');
+            var ul = null;
+
+            for(var i = 0; i < arrayUl.length; i++)
+            {
+                ul = arrayUl[i];
+
+                var dataCount = $(ul).children('li').length;
+
+                // 한 Tab 에 표시할 상품 개수
+                var defaultShowCount = defaultTabListShowCount;
+
+                try{
+                    // 상품 그룹 Tab 이 표시될 때, 제한 개수까지 표시 ( Height 제어 )
+                    if(dataCount > defaultShowCount){
+
+                        var li = $(ul).children('li')[0];
+                        var liHeight = $(li).outerHeight();
+                        var liMarginBottom =$(li).css('margin-bottom').replace('px','');
+
+                        var height = Number(Number(liHeight) * defaultShowCount) + Number(Number(liMarginBottom) * (defaultShowCount)) + "px";
+
+                        $(ul).css('height', height);
+                        $(ul).css('overflow', 'hidden');
+                    }
+                    // 더보기 버튼을 이미 누른 Tab 의 경우, 모두 보이기
+                    else
+                    {
+                        $(ul).css('height', 'auto');
+                        $(ul).css('overflow', 'auto');
+                    }
+                } catch (e){
+                    $(ul).css('height', '580px');
+                    $(ul).css('overflow', 'hidden');
+                }
+            }
+        }
+
+        // 선택된 상품 그룹 Tab Layer 의 Height 를 최대로 설정하여 모두 표시
+        function ShowAllGoodsGroupTabList(index){
+            var ul = $('#divGoodsListTab_' + index).children('ul')[0];
+
+            var dataCount = $(ul).children('li').length;
+
+            var li = $(ul).children('li')[0];
+
+            var liHeight = $(li).outerHeight();
+            var liMarginBottom =$(li).css('margin-bottom').replace('px','')
+            var height = Number(Number(liHeight) * dataCount) + Number(Number(liMarginBottom) * (dataCount)) + "px";
+        
+            $(ul).css('height', height);
+            $(ul).css('overflow', 'hidden');
+
+        }
+
+        // 선택된 Tab Index 표시
+        function ShowGoodsGroupTabListByIndex(index)
+        {
+            var tabLayer = $('.productsWrap');
+
+            for(var i = 0; i < tabLayer.length; i++)
+            {
+                if(i == index)
+                $(tabLayer[i]).css('display', 'block');
+            else
+                $(tabLayer[i]).css('display', 'none');
+            }
+        }
+
+
+        $(document).ready(function (e) {
+
+            if(@ViewBag.CateCD != 0){
+
+                //상단 LNB 현재 카테고리 선택
+                var currentMenu = $('.headerMenu ul li[data-catecd="@ViewBag.CateCD"]');
+                if(currentMenu.length > 0){
+                $('.headerMenu ul li').removeClass('current');
+                    currentMenu.addClass('current');
+                }
+
+                //상단 Edit Menu 현재 카테고리 선택
+                var currentEditMenu = $('.editMenuWrap ul li[data-catecd="@ViewBag.CateCD"]');
+                if(currentEditMenu.length > 0){
+                $('.editMenuWrap ul li').removeClass('current');
+                    currentEditMenu.addClass('current');
+                }
+            }
+
+            // 더보기 버튼 이벤트
+            $(document.body).on('click', '.moreButton', function (e) {
+
+                // 해당 Tab 의 모든 상품이 보일 수 있는 Height 로 재조정
+                var tmpIndex = $(this).attr('data-tabindex');
+                ShowAllGoodsGroupTabList(tmpIndex);
+
+                // 더보기를 수행한 버튼 숨김 처리
+                $(this).css('display', 'none');
+
+                });
+
+                // 이벤트 배너 슬라이드
+                vmEventBannerList = new Vue({
+                el: '#vueEventBannerList',
+                data: {
+                    items: jsonForView.EventBannerList
+                }
+            });
+
+            // 이벤트 배너 전체보기
+            vmEventBannerTotal = new Vue({
+                el: '#vueEventBannerTotal',
+                data: {
+                    items: jsonForView.EventBannerList
+                }
+            });
+
+
+            // 모바일 스페셜 특가
+            vmMobileSpecialPriceProduct = new Vue({
+                el: '#vueMobileSpecialPriceProduct',
+                data: {
+                    items: jsonForView.GoodsGroupMobileSpecialPrice
+                },
+                methods: {
+                    GenerateLink: function (type, baseGoodsCD, goodsCD) {
+
+                        return _common.GoodsDetailPage(type, baseGoodsCD, goodsCD);
+                    }
+                }
+
+
+            });
+
+            // 상단 배너
+            vmBannerTop = new Vue({
+                el: '#vueBannerTop',
+                data: {
+                    items: jsonForView.KeywordLinkTop
+                }
+            })
+
+            // 중단 배너
+            vmBannerMiddle = new Vue({
+                el: '#vueBannerMiddle',
+                data: {
+                    items: jsonForView.KeywordLinkMiddle
+                }
+            })
+
+            // 하단 배너
+            vmBannerBottom = new Vue({
+                el: '#vueBannerBottom',
+                data: {
+                    items: jsonForView.KeywordLinkBottom
+                }
+            });
+
+            // 상품 그룹 ( Tab Section )
+            vmGoodsGroupForTabSection = new Vue({
+                el: '#vueGoodsGroupForTabSection',
+                data: {
+                    itemsOfGroupName: jsonGoodsGroupForTabSection,
+                    //itemsOfCurrentGoodsGroup: jsonForView.GoodsGroupsForTagSection[0],
+                    //itemsOfCurrentGoodsGroupsTabIndex: 0,
+                    itemsOfAll: jsonForView.GoodsGroupsForTagSection,
+                    //isMoreButtonShow: [],
+                    defaultShowCount: defaultTabListShowCount
+                }
+                , beforeCreate: function () {
+
+                }
+                , created: function () {
+
+                }
+                , mounted: function(){
+
+                    SetGoodsGroupAllTabListStyle();
+                    ShowGoodsGroupTabListByIndex(0);
+
+                }
+                , methods: {
+                    GenerateLink: function (type, baseGoodsCD, goodsCD) {
+
+                        return _common.GoodsDetailPage(type, baseGoodsCD, goodsCD);
+                    },
+                    SwitchGoodsGroup: function (index) {
+
+                        ShowGoodsGroupTabListByIndex(index);
+
+                    },
+                }
+                , watch: {
+
+                }
+            });
+
+            // HTML TOP
+            vmHtmlTop = new Vue({
+                el: '#vueHtmlTop',
+                data: {
+                    useYN: jsonForView.HtmlTopAndBottom.Contents_U_Y == "Y" ? true : false,
+                    contents: jsonForView.HtmlTopAndBottom.Ctt
+                }
+            });
+
+            // HTML Bottom
+            vmHtmlBottom = new Vue({
+                el: '#vueHtmlBottom',
+                data: {
+                    useYN: jsonForView.HtmlTopAndBottom.Contents_U_Y_S == "Y" ? true : false,
+                    contents: jsonForView.HtmlTopAndBottom.Contents_S
+                }
+            });
+
+            // Show Parent Div For Vue.js
+            $('#travelMain').css('display', 'block');
+
+            // theme travel category morebutton
+            $('.categoryMoreButton button').on('click', function() {
+                if ($('.specialtyMallCategories').hasClass('opened')) {
+                    $('.specialtyMallCategoriesInner').animate({
+                        height: '61px'
+                    }, 300, function() {
+                        $('.specialtyMallCategories').removeClass('opened');
+                    });
+                } else {
+                    var $categoryListHeight = $('.specialtyMallCategoryList').outerHeight();
+                    
+                    $('.specialtyMallCategoriesInner').animate({
+                        height: $categoryListHeight + 'px'
+                    }, 300, function() {
+                        $('.specialtyMallCategories').addClass('opened');
+                    });
+                }
+            });
+        });
+        
+    </script>
+}
+
+
+<div class="travelMainWrapper">
+    <h1 class="description">여행</h1>
+
+    <div id="vueEventBannerList" v-if="items != null" class="mainBannerWrap">
+        <h2 class="description">이벤트 배너</h2>
+
+        @* 이벤트 배너 ( 슬라이드 ) *@
+        <div class="mainBannerList">
+
+            <ul class="items">
+                <li v-for="item in items" class="item" style="width: 375px;">
+                    <a v-bind:href="item.Link_U">
+                        <span class="imgWrap">
+                            <img v-bind:src="item.Mobile_I" v-bind:alt="item.Promotion_T" onerror="_common.SetDefaultImg(this,90)" />
+                        </span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+        <div class="bannerCounter">
+            <div class="counterWrap">
+                <span class="counter">
+                    <i class="currentNumber">-</i>/
+                    <i class="total">-</i>
+                </span>
+                <button type="button" class="moreEventListBtn" data-layer="mainBannerLayer">
+                    <span>이벤트 더보기</span>
+                </button>
+            </div>
+        </div>
+        @* / 이벤트 배너 ( 슬라이드 )*@
+
+
+        @* 이벤트 전체 보기 *@ 
+        <div id="vueEventBannerTotal" class="mainBannerLayer">
+            <div class="bannerWrap">
+                <h3 class="title">이벤트 전체보기</h3>
+                <button class="layerClose" type="button">
+                    <span>닫기</span>
+                </button>
+                <div class="allBannerList scrollWrap" style="height: 634px;">
+                    <ul>
+                        <li v-for="item in items">
+                            <a v-bind:href="item.Link_U">
+                                <span class="imgWrap">
+                                    <img v-bind:src="item.Mobile_I" v-bind:alt="item.Promotion_T" onerror="_common.SetDefaultImg(this,90)">
+                                </span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        @* / 이벤트 전체 보기 *@
+    </div>
+
+
+    @*모바일 내비게이션*@
+    @{
+        Html.RenderAction("__Navigation_Mobile", "SharedControl", new { cateCd = ViewBag.CateCD });
+    }
+
+
+    @* HTML : 상단 *@
+    <div id="vueHtmlTop" v-if="useYN == true" v-html="contents">
+    </div>
+    @* / HTML : 상단 *@
+
+
+    @* 모바일 스페셜 특가 *@
+    <div id="vueMobileSpecialPriceProduct" v-if="items != null" class="mobileSpecialPriceWrap">
+        <h2>
+            모바일
+            <strong>스페셜 특가!</strong>
+        </h2>
+        <div class="specialProductsWrap">
+            <ul class="specialProductsInner">
+
+                <li v-for="item in items" class="specialProduct" style="margin-right: 35px;">
+                    <a v-bind:href="GenerateLink(item.Goods_T, item.Base_G_C, item.Goods_C)">
+                        <div class="prodImg">
+                            <img v-bind:src="item.Image_U_F_L" alt="상품이미지" onerror="_common.SetDefaultImg(this,90)">
+                        </div>
+                        <div class="prodInfoWrap">
+                            <div class="prodInfo">{{item.Add_V_1}}</div>
+                            <div class="prodTitle">{{item.Disp_G_N}}</div>
+                            <div class="prodPrice">
+                                <strong>{{item.Min_A_R_W_C}}</strong>
+                                <i class="unit">원~</i>
+                            </div>
+                        </div>
+                    </a>
+                </li>
+
+            </ul>
+        </div>
+    </div>
+    @* / 모바일 스페셜 특가 *@
+
+
+    @* 상단 배너 *@
+    <div id="vueBannerTop" v-if="items != null" class="slideBannersWrap">
+        <ul class="slideBannersInner">
+
+            <li v-for="item in items" class="slideBanner">
+                <a v-bind:href="item.Link_U">
+                    <img v-bind:src="item.Image_F_U" v-bind:alt="item.Kwd">
+                </a>
+            </li>
+
+        </ul>
+        <div class="swiperPagination swiper-pagination-clickable swiper-pagination-bullets"><button class="button swiper-pagination-bullet swiper-pagination-bullet-active">1</button><button class="button swiper-pagination-bullet">2</button><button class="button swiper-pagination-bullet">3</button></div>
+    </div>
+    @* / 상단 배너 *@
+
+
+    @* Tab 상품 그룹 *@ 
+    <div id="vueGoodsGroupForTabSection" v-if="itemsOfGroupName != null" class="productsListWrap">
+        
+        @* Tab 생성 *@
+        <div class="categoriesWrap">
+            <div class="categoriesInner" scrollbar="" data-scrollbar="" tabindex="1" style="overflow: hidden; outline: none;">
+                <article class="scroll-content" style="width: 803px;">
+                    <ul>
+
+                        <li v-for="(item, index) in itemsOfGroupName" v-bind:class="{current: index == 0}" v-on:click="SwitchGoodsGroup(index)">
+                            <a href="javascript:">{{item}}</a>
+                        </li>
+
+                    </ul>
+                </article>
+                <aside class="scrollbar-track scrollbar-track-x" style="display: block;">
+                    <div class="scrollbar-thumb scrollbar-thumb-x" style="width: 175.125px; transform: translate3d(0px, 0px, 0px);"></div>
+                </aside>
+                <aside class="scrollbar-track scrollbar-track-y" style="display: none;">
+                    <div class="scrollbar-thumb scrollbar-thumb-y" style="height: 32px; transform: translate3d(0px, 0px, 0px);"></div>
+                </aside>
+                <canvas class="overscroll-glow" style="display: none; pointer-events: none;"></canvas>
+            </div>
+        </div>
+        @* /Tab 생성 *@
+
+
+        @* 상품 그룹 리스트 생성 *@
+        <div v-bind:id="'divGoodsListTab_' + indexParent" v-if="itemsOfAll != null" v-for="(itemParent, indexParent) in itemsOfAll" class="productsWrap" style="display: block">
+
+            <ul>
+                <li v-for="(item, index) in itemParent">
+                    <a v-bind:href="GenerateLink(item.Goods_T, item.Base_G_C, item.Goods_C)">
+                        <div class="prodImg">
+                            <img v-bind:src="item.Image_U_F_L" alt="상품이미지" onerror="_common.SetDefaultImg(this,90)">
+                        </div>
+                        <div class="prodInfoWrap">
+                            <div class="prodInfo">{{item.Add_V_1}}</div>
+                            <div class="prodTitle">{{item.Disp_G_N}}</div>
+                            <div class="prodPrice">
+                                <strong>{{item.Min_A_R_W_C}}</strong>
+                                <i class="unit">원~</i>
+                            </div>
+                        </div>
+                    </a>
+                </li>
+            </ul>
+
+            <button v-if="itemParent.length > defaultShowCount" v-bind:data-tabindex="indexParent" type="button" class="moreButton">
+                <i>더보기</i>
+            </button>
+
+        </div>
+        @* / 상품 그룹 리스트 생성 *@
+
+    </div>
+
+    @* 중단 배너 *@
+    <div id="vueBannerMiddle" v-if="items != null" class="firstBanners">
+        <ul class="firstBannersInner">
+            <li v-for="item in items" class="firstBanner">
+                <a v-bind:href="item.Link_U">
+                    <img v-bind:src="item.Image_F_U" v-bind:alt="item.Kwd">
+                </a>
+            </li>
+        </ul>
+        <div class="swiperPagination swiper-pagination-clickable swiper-pagination-bullets"><span class="swiper-pagination-bullet"></span><span class="swiper-pagination-bullet swiper-pagination-bullet-active"></span></div>
+    </div>
+    @* / 중단 배너 *@
+
+
+    @* HTML : 하단 *@
+    <div id="vueHtmlBottom" v-if="useYN == true" v-html="contents">
+    </div>
+    @* / HTML : 하단 *@
+
+
+    @* 하단 배너 *@
+    <div id="vueBannerBottom" v-if="items != null" class="secondBanners">
+        <ul class="secondBannersInner">
+            <li v-for="item in items" class="secondBanner">
+                <a v-bind:href="item.Link_U">
+                    <img v-bind:src="item.Image_F_U" v-bind:alt="item.Kwd">
+                </a>
+            </li>
+        </ul>
+        <div class="swiperPagination swiper-pagination-clickable swiper-pagination-bullets"><span class="swiper-pagination-bullet swiper-pagination-bullet-active"></span><span class="swiper-pagination-bullet"></span></div>
+    </div>
+    @* / 하단 배너 *@
+</div>
+
+
+<!-- Category Menu Layer -->
+@{Html.RenderAction("CategoryView_mobile", "Iframe", new { cateCD = ViewBag.CateCD });}
+<!-- / Category Menu Layer -->
+
+
+

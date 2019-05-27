@@ -1,0 +1,293 @@
+﻿@using System.Data;
+@using TOUR.THETRAVEL.CO.KR.WEB.App_Code.Common.CommonEnums;
+
+@*    
+    - MVC 기반의 View 에서 공통적으로 사용되는 Function Library
+*@
+@functions
+{
+    public const string FORMAT_ADDON_PARAMETERS_DEFAULT = "{0}{1}mbn={2}&mln={3}{4}";
+
+    /// <summary>
+    /// 전달받은 인자들로 wise log 용 Parameter 를 생성하고 반환합니다. 
+    /// ( URL 값을 함께 받고, 구분자를 결정하여 문자열을 조합 [ ? OR & ] )
+    /// </summary>
+    /// <param name="url"></param>
+    /// <param name="mbn"></param>
+    /// <param name="mln"></param>
+    /// <returns></returns>
+    public static string GenerateWiseLogParametersWithUrl(string url, string mbn, string mln, string idx)
+    {
+        string returnResult = string.Empty;
+        string DELIMITER = string.Empty;
+
+        // url 이 빈 값이 아닐 경우, Parameter 조합
+        if (!string.IsNullOrEmpty(url))
+        {
+            if (url.Contains("?"))
+                DELIMITER = "&";
+            else
+                DELIMITER = "?";
+            
+            returnResult = string.Format(FORMAT_ADDON_PARAMETERS_DEFAULT, url, DELIMITER, mbn, mln, idx);
+        }
+        else
+            returnResult = url;
+
+        return returnResult;
+    }
+
+    /// <summary>
+    /// /free/d3 에 표시되는 상품의 Link Url 을 생성하여 반환합니다.
+    /// </summary>
+    /// <param name="row"></param>
+    /// <returns></returns>
+    public static string GenerateGoodsLinkUrl(DataRow row)
+    {
+        string returnResult = string.Empty;
+        string FORMAT_LINK_URL = "/goods/detail/?GoodsCd={0}&cate={1}";
+
+        string tmpBaseGoodsCD = string.Empty;
+        string tmpCateCD = string.Empty;
+
+        if (CommonUtil.IsColumn(row, "GoodsCD"))
+            tmpBaseGoodsCD = row["GoodsCD"].ToString();
+
+        if (CommonUtil.IsColumn(row, "CateCD"))
+            tmpCateCD = row["CateCD"].ToString();
+
+        returnResult = string.Format(FORMAT_LINK_URL, tmpBaseGoodsCD, tmpCateCD);
+
+        return returnResult;
+    }
+    
+    /// <summary>
+    /// /free/d3 에 표시되는 상품의 Link Url 을 생성하여 반환합니다.
+    /// </summary>
+    /// <param name="row"></param>
+    /// <returns></returns>
+    public static string GenerateBaseGoodsLinkUrl(DataRow row)
+    {
+        string returnResult = string.Empty;
+        string FORMAT_LINK_URL = "/goods/detail/?BaseGoodsCd={0}&cate={1}";
+
+        string tmpBaseGoodsCD = string.Empty;
+        string tmpCateCD = string.Empty;
+
+        if (CommonUtil.IsColumn(row, "BaseGoodsCD"))
+            tmpBaseGoodsCD = row["BaseGoodsCD"].ToString();
+
+        if (CommonUtil.IsColumn(row, "CateCD"))
+            tmpCateCD = row["CateCD"].ToString();
+
+        returnResult = string.Format(FORMAT_LINK_URL, tmpBaseGoodsCD, tmpCateCD);
+
+        return returnResult;
+    }
+
+    /// <summary>
+    /// 문자열에 존재하는 html tag 를 제거하고 그 값을 반환합니다.
+    /// </summary>
+    /// <param name="Html"></param>
+    /// <returns></returns>
+    public static string StripHtml(string Html)
+    {
+        string output;
+        
+        //get rid of HTML tags
+        output = System.Text.RegularExpressions.Regex.Replace(Html, "<[^>]*>", string.Empty);
+        
+        //get rid of multiple blank lines
+        output = System.Text.RegularExpressions.Regex.Replace(output, @"^\s*$\n", string.Empty, System.Text.RegularExpressions.RegexOptions.Multiline);
+
+        output = output.Replace("nbsp", "").Replace(";", "").Replace("amp", "").Replace("&", "");
+
+        return output;
+    }
+
+    /// <summary>
+    /// 빈 문자열을 &nbsp; 형태로 반환합니다.
+    /// </summary>
+    /// <param name="plainText"></param>
+    /// <returns></returns>
+    public static string ConvertStringEmptyToHtml(string plainText)
+    {
+        string returnResult = string.Empty;
+        
+        if(string.IsNullOrEmpty(plainText))
+            returnResult = "&nbsp;";
+        else
+            returnResult = plainText;
+        
+        return returnResult;
+    }
+
+    /// <summary>
+    /// hhmm 형태의 문자열을 08:00 과 같은 형태로 가공한 값을 반환합니다.
+    /// </summary>
+    /// <param name="strTime"></param>
+    /// <returns></returns>
+    public static string ConvertTimeFormat(string strTime)
+    {
+        string retvalue = "";
+
+        if (strTime.Trim().Length >= 4)
+            retvalue = strTime.Trim().Substring(0, 2) + ":" + strTime.Trim().Substring(2, 2);
+
+        return retvalue;
+    }
+
+    /// <summary>
+    /// yyyyMMdd 문자열을 11.16(월) 와 같은 형태로 가공한 값을 반환합니다.
+    /// </summary>
+    /// <param name="strDate"></param>
+    /// <returns></returns>
+    public static string ConvertDateFormatToSimple(string strDate)
+    {
+        string retvalue = "";
+
+        if (strDate.Trim().Length >= 8)
+            retvalue = strDate.Substring(4, 2) + "." + strDate.Substring(6, 2) + " (" + new CommonLib.Tour.Common.Util.TourCustomDate(strDate).GetDayName() + ") ";
+
+        return retvalue;
+    }
+
+    // 출발일 선택 레이어에서 상태를 표시하는데 사용되는 함수
+    public static string PrintStatusBtn(string SClose, string TravellerCnt, string ReservedSeat, string goodsTypeCD, string AreaCD, string StartDT, string SupplierCD, string ReservableSeat, string TrafficBlockUseYN)
+    {
+        DateTime StartDate = new TourCustomDate(StartDT).Date;
+        int intDayToStart = StartDate.CompareTo(DateTime.Today);
+        int RSeat = ConvertUtil.IntParse(TravellerCnt, 0) - ConvertUtil.IntParse(ReservedSeat, 0);
+
+        if (SupplierCD.Equals(SUPPLIERS_CODE.MODETOUR)) //모두투어 일 경우
+        {
+            if (SClose.Equals("1") || intDayToStart < 0) //예약 마감
+            {
+                // deadline
+                return "예약마감";
+            }
+            else if (StartDate.CompareTo(DateTime.Today.AddDays(7)) <= 0)
+            {
+                return "전화문의";   //전화문의임
+            }
+            else
+            {
+                if (RSeat < 1)
+                {   // standby
+                    return "대기예약";
+                }
+            }
+        }
+        else if (SupplierCD.Equals(SUPPLIERS_CODE.HANATOUR)) //하나투어 일 경우
+        {
+            if (SClose.Equals("0") || intDayToStart < 0) //예약 마감
+            {
+                // deadline
+                return "예약마감";
+            }
+            else
+            {
+                if (RSeat < 1)
+                {   // standby
+                    return "대기예약";
+                }
+            }
+        }
+        else if (SupplierCD.Equals(SUPPLIERS_CODE.YBTOUR)) //노랑풍선 일 경우 [TravellerCnt == 0의 경우는 예약가능인원 무제한]
+        {
+            int rset = Convert.ToInt32(RSeat);
+            int nTravellerCnt = ConvertUtil.IntParse(TravellerCnt, 0);
+            if (SClose.Equals("C") || intDayToStart < 0) //예약 마감
+            {
+                // deadline
+                return "예약마감";
+            }
+            else if (SClose.Equals("S") || (nTravellerCnt > 0 && RSeat < 1)) //대기예약
+            {
+                // standby
+                return "대기예약";
+            }
+        }
+        else if (SupplierCD.Equals(SUPPLIERS_CODE.HANATOUR)) //한진관광일 경우
+        {
+            //예약 가능 상태 : R(예약가능) / W(대기예약) / E(예약불가
+            if (SClose.Equals("E") || intDayToStart < 0) //예약 마감
+            {
+                // deadline
+                return "예약마감";
+            }
+            else
+            {
+                if (SClose.Equals("W") || RSeat < 1)
+                {   // statndby
+                    return "대기예약";
+                }
+            }
+        }
+        else
+        {	//인터파크 상품
+            //교통별 블럭 관리 ReservableSeat(예약 가능 수), TrafficBlockUseYN(블럭 마감 사용 여부)
+
+            if (SClose.Equals("C")
+                || intDayToStart < 0
+                || (!AreaCD.Equals("AA") && intDayToStart == 0)
+                || (goodsTypeCD.Equals("J") && StartDate.CompareTo(DateTime.Today.AddDays(3)) <= 0)//데이투어상품 3일전 마감
+                || (ConvertUtil.IntParse(ReservableSeat, 0) <= 0 && TrafficBlockUseYN == "Y"))
+            {
+                // daeadline
+                return "예약마감";
+            }
+            else if (SClose.Equals("S") || (ConvertUtil.IntParse(ReservableSeat, 0) <= 0 && TrafficBlockUseYN != "Y"))
+            {
+                // standby
+                return "대기예약";
+            }
+        }
+
+
+        if (SClose.Equals("G"))
+        {
+            // start
+            return "출발가능";
+        }
+        else
+        {
+            // receieve
+            return "예약접수";
+        }
+
+    }
+
+    /// <summary>
+    /// 상품 상태에 따라 출발일 선택 레이어에 표시되는 상태 값 Css Class 를 반환합니다.
+    /// </summary>
+    /// <param name="status">예약마감 / 대기예약 / 전화문의 / 예약접수 / 출발가능 등</param>
+    /// <returns></returns>
+    public static string GetCssClassNameForStatus(string status)
+    {
+        string returnValue = string.Empty;
+        switch (status)
+        {
+            case "예약마감":
+                returnValue = "point03";
+                break;
+            case "대기예약":
+                returnValue = "point04";
+                break;
+            case "전화문의":
+                returnValue = "point02";
+                break;
+            case "출발가능":
+                returnValue = "point01";
+                break;
+            case "예약접수":
+                returnValue = "point02";
+                break;
+            default:
+                returnValue = "point03";
+                break;
+        }
+
+        return returnValue;
+    }
+}}

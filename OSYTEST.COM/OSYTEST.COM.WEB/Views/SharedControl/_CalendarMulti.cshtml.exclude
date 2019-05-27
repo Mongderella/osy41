@@ -1,0 +1,245 @@
+﻿
+@model System.Data.DataSet
+
+@{
+    // 1개 달력 모드일 경우, 1번째 month 를 저장하고 이를 사용하여 3달 팝업 생성
+    var DisplayCurrnet = (dynamic)null; 
+}
+
+
+@if (Model != null && Model.Tables.Count > 0)
+{
+    <div class="content">
+        <div class="data-spot">
+            <button type="button" class="ui-btn add1 prev j_btnCalendar" data-startdt="@ViewBag.PrevStartDT" data-monthcount="@ViewBag.MonthCount" data-targetdivid="@ViewBag.TargetDivId" data-basegoodscd="@ViewBag.BaseGoodsCD" data-eventtriggername="@ViewBag.EventTrigerClassName"><span>이전</span></button>
+            <button type="button" class="ui-btn add1 next j_btnCalendar" data-startdt="@ViewBag.NextStartDT" data-monthcount="@ViewBag.MonthCount" data-targetdivid="@ViewBag.TargetDivId" data-basegoodscd="@ViewBag.BaseGoodsCD" data-eventtriggername="@ViewBag.EventTrigerClassName"><span>다음</span></button>
+        </div>
+
+        @for (int i = 0; i < Model.Tables.Count; i++)
+        {
+            // 현재 표시되는 달력의 년, 월 구하기
+            string yearMonth = string.Empty;
+
+            // 현재 표시되는 월의 yyyyMM 문자열 구하기 ( 달력 렌더링 시 조건에 사용 )
+            string currentDate_yyyyMM = string.Empty;
+
+            for (int j = 0; j < Model.Tables[i].Rows.Count; j++)
+            {
+                bool isSearched = false;
+
+                for (int k = 0; k < Model.Tables[i].Columns.Count; k++)
+                {
+                    if (!string.IsNullOrEmpty(Model.Tables[i].Rows[j].ItemArray[k].ToString()))
+                    {
+                        // 0 번째 Column 은 주차를 의미하므로 제외
+                        if (k == 0)
+                        {
+                            continue;
+                        }
+
+                        string tmp = Model.Tables[i].Rows[j].ItemArray[k].ToString().Split('-')[1];
+                        DateTime tmpDate = DateTime.ParseExact(tmp, "yyyyMMdd", System.Globalization.CultureInfo.InvariantCulture);
+
+                        // 1개 달력 모드일 때 사용할 이후 3개월 팝업을 위해 저장
+                        DisplayCurrnet = tmpDate;
+                        
+                        yearMonth = tmpDate.ToString("yyyy.MM");
+                        currentDate_yyyyMM = tmpDate.ToString("yyyyMM");
+                        isSearched = true;
+                        break;
+                    }
+                }
+
+                if (isSearched)
+                {
+                    break;
+                }
+            }
+
+
+            @* 달력이 복수개 존재할 경우를 위해 내부 객체 id에 unique id 할당 ( 'calSubMonths_' + 이벤트 트리거 클래스명) *@
+            <div id="calSubMonths_@ViewBag.EventTrigerClassName" class="data" style="display: none;">
+                <ul>
+
+                    @for (int j = 0; j < 3; j++)
+                    {
+                        DateTime tmpDate = DisplayCurrnet.AddMonths(j + 1);
+
+                        <li id="liNext" class="j_btnCalendar" data-startdt="@tmpDate.ToString("yyyyMMdd")" data-monthcount="@ViewBag.MonthCount" data-targetdivid="@ViewBag.TargetDivId" data-basegoodscd="@ViewBag.BaseGoodsCD" data-eventtriggername="@ViewBag.EventTrigerClassName">
+                            <a style="cursor:pointer;">
+                                <strong>@tmpDate.ToString("yyyy.MM")</strong>
+                            </a>
+                        </li>
+                    }
+                </ul>
+
+                <p class="btn-close01 j_btnShowOtherMonths" data-targetdivid="calSubMonths_@ViewBag.EventTrigerClassName" style="cursor:pointer;">
+                    <a href="javascript:">닫기</a>
+                </p>
+            </div>
+
+            <div class="section">
+                <strong class="date">
+                    @* 1개월치 달력의 경우 yyyy.MM 을 선택 시, 표시된 월 이후 3달 이동 기능을 제공 *@
+                    @if (ViewBag.MonthCount == 1)
+                    {
+                        <a href="javascript:" class="j_btnShowOtherMonths" data-targetdivid="calSubMonths_@ViewBag.EventTrigerClassName">@yearMonth</a>
+                    }
+                    else
+                    {
+                        @yearMonth
+                    }
+                </strong>
+                <table class="ui-calendar">
+                    <caption>달력</caption>
+                    <colgroup>
+                        <col style="width:14.5%">
+                        <col style="width:14.2%">
+                        <col style="width:14.2%">
+                        <col style="width:14.2%">
+                        <col style="width:14.2%">
+                        <col style="width:14.2%">
+                        <col style="width:14.5%">
+                    </colgroup>
+                    <thead>
+                        <tr>
+                            <th class="holiday">SUN</th>
+                            <th>MON</th>
+                            <th>TUE</th>
+                            <th>WED</th>
+                            <th>THU</th>
+                            <th>FRI</th>
+                            <th class="sat">SAT</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (System.Data.DataRow row in Model.Tables[i].Rows)
+                        {
+                            <!-- 각 주의 날짜 렌더링 -->
+                            <tr>
+                                @for (int l = 0; l < row.ItemArray.Count(); l++)
+                                {
+                                    // 0 번째는 주차 표시므로 사용하지 않음
+                                    if (l != 0)
+                                    {
+                                        string cssClass = string.Empty;
+
+                                        if (!string.IsNullOrEmpty(row.ItemArray[l].ToString()))
+                                        {
+                                            // 모든 일자에 공통으로 들어가는 class
+                                            cssClass += " j_day";
+
+                                            // 일요일 마크
+                                            if (l == 1)
+                                            {
+                                                cssClass += " holiday";
+                                            }
+
+                                            // 토요일 마크
+                                            if (l == 7)
+                                            {
+                                                cssClass += " sat";
+                                            }
+
+                                            // ( Data ex : 1 -20160501-N-N )
+                                            string[] tmpDay = row.ItemArray[l].ToString().Split('-');
+
+                                            // 해당 월에 속하는 일자일 경우 렌더링
+                                            if (tmpDay[1].Substring(0, 6) == currentDate_yyyyMM)
+                                            {
+                                                // item Date
+                                                DateTime tmpItemDate = DateTime.ParseExact(tmpDay[1], "yyyyMMdd", System.Globalization.CultureInfo.InvariantCulture);
+
+                                                // 해당 일자에 상품이 존재할 경우 / baseGoodsCD 가 존재하지 않으면서 오늘 이후의 경우(단순달력), 일자를 선택 가능하도록 활성화
+                                                if (tmpDay[2] == "Y" || (string.IsNullOrEmpty(ViewBag.BaseGoodsCD) && DateTime.Today <= tmpItemDate))
+                                                {
+                                                    <td class="@cssClass" data-date="@tmpDay[1]">
+                                                        <a href="javascript:" class="@ViewBag.EventTrigerClassName" data-date="@tmpDay[1]">@tmpDay[0].Trim()</a>
+                                                    </td>
+                                                }
+                                                else
+                                                {
+                                                    <td class="@cssClass" data-date="@tmpDay[1]">@tmpDay[0].Trim()</td>
+                                                }
+                                            }
+                                            // 해당 월에 속하는 날짜가 아닐 경우 빈 칸
+                                            else
+                                            {
+                                                <td class="@cssClass" data-date="@tmpDay[1]"></td>
+                                            }
+                                        }
+                                        // 데이터가 null 일 경우 빈 칸
+                                        else
+                                        {
+                                            <td class="@cssClass"></td>
+                                        }
+                                    }
+                                }
+                                @*<td></td>
+                        <td></td>
+                        <td></td>
+                        <td>01</td>
+                        <td>02</td>
+                        <td>03</td>
+                        <td class="sat">04</td>*@
+                            </tr>
+                        }
+                        <!-- 2 주차 -->
+                        @*<tr>
+                    <td class="holiday"><a href="">12</a></td>
+                    <td><a href="#">13</a></td>
+                    <td class="choice"><a href="#">14</a></td>
+                    <td><a href="#">15</a></td>
+                    <td><a href="#">16</a></td>
+                    <td><a href="#">17</a></td>
+                    <td class="sat"><a href="">11</a></td>
+                </tr>*@
+                        <!-- 3 주차 -->
+                        @*<tr>
+                    <td class="holiday"><a href="">19</a></td>
+                    <td><a href="">20</a></td>
+                    <td><a href="">21</a></td>
+                    <td><a href="">22</a></td>
+                    <td><a href="">23</a></td>
+                    <td><a href="">24</a></td>
+                    <td class="sat"><a href="">11</a></td>
+                </tr>*@
+                        <!-- 4 주차 -->
+                        @*<tr>
+                    <td class="holiday"><a href="">19</a></td>
+                    <td><a href="">20</a></td>
+                    <td><a href="">21</a></td>
+                    <td><a href="">22</a></td>
+                    <td><a href="">23</a></td>
+                    <td><a href="">24</a></td>
+                    <td class="sat"><a href="">11</a></td>
+                </tr>*@
+                        <!-- 5 주차 -->
+                        @*<tr>
+                    <td class="holiday"><a href="">19</a></td>
+                    <td><a href="">20</a></td>
+                    <td><a href="">21</a></td>
+                    <td><a href="">22</a></td>
+                    <td><a href="">23</a></td>
+                    <td><a href="">24</a></td>
+                    <td class="sat"><a href="">11</a></td>
+                </tr>*@
+                        <!-- 6 주차 -->
+                        @*<tr>
+                    <td class="holiday"><a href="">19</a></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>*@
+                    </tbody>
+                </table>
+
+            </div>
+        }
+
+    </div>
+    
+}

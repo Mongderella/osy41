@@ -1,0 +1,10 @@
+﻿@{
+    Layout = null;
+}
+
+<script type="text/javascript">
+
+    @* Mobile List 페이지에서 PC 카테고리별 List 페이지로 Redirect 추후 처리 예정 *@
+    document.location.href = '/package/main';
+
+</script>

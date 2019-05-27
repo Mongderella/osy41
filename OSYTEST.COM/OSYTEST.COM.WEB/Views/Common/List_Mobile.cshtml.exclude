@@ -1,0 +1,682 @@
+﻿@using INTERPARKTOUR.UTIL;
+
+@{
+    Layout = "~/Views/Shared/_Layout_Mobile.cshtml";
+
+    int viewCateCD = 0;
+    try
+    {
+        if (ViewBag.CateCD != null)
+        {
+            viewCateCD = ViewBag.CateCD;
+        }
+    }
+    catch (Exception ex)
+    {
+        TOUR.THETRAVEL.CO.KR.WEB.App_Code.Common.HelperNLog.WriteNLog4Views(Request.Url.OriginalString, ex.ToString());
+    }
+}
+
+@section StyleInLayout{
+
+    <link rel="stylesheet" href="@HelperFile.GetJsWithVersionCode(ViewBag._MtourDomain + "/css/travel/travelSearchResult.css")">
+    <link rel="stylesheet" href="@HelperFile.GetJsWithVersionCode(ViewBag._MtourDomain + "/css/common/filterLayer.css")">
+    <link rel="stylesheet" href="@HelperFile.GetJsWithVersionCode(ViewBag._MtourDomain + "/css/travel/travelPopup.css")">
+    
+}
+
+@section ScriptInLayout{
+    
+    <script type="text/javascript" src="@Url.Content(HelperFile.GetJsWithVersionCode("~/Scripts/noUiSlider/noUiSlider.min.js"))" defer></script>   
+    <script type="text/javascript" src="@Url.Content(HelperFile.GetJsWithVersionCode("~/Scripts/Views/Common_Mobile/filter.js"))" defer></script>    
+    <script type="text/javascript" src="@Url.Content(HelperFile.GetJsWithVersionCode("~/Scripts/Views/Common_Mobile/calendarCustom.js"))"></script>
+
+    @* Html Template : 상품 리스트 *@
+    <script type="text/x-template" id="cp-list-form-template">
+
+        @* 상품 객체 *@
+        <li v-if="index != 4">
+            <div class="content">
+                @* Anchor href 분기 : 출발상품 기준 리스트일 경우, GoodsCD 바인딩, 기초상품 기준 리스트일 경우 BaseGoodsCD 바인딩 *@
+                <a v-bind:href="item3 + (item4 == 'Y' ? item.Base_G_C : item.Goods_C) ">
+                    <div class="prodImg">
+                        <img v-bind:src="item.Image_U_F_L" alt="상품 이미지" onerror="_common.SetDefaultImg(this,90)">
+                    </div>
+                    <div class="infoWrap">
+                        <div class="title">{{item.Disp_G_N}}</div>
+                        <div class="price">
+                            <span class="number">{{item.Adult_R.toLocaleString()}}</span>
+                            <i class="unit">원~</i>
+                        </div>
+                    </div>
+                </a>
+                @* 버튼 분기 처리 : 출발상품 기준 리스트는 출발일 보기 레이어 사용X, 상세로 바로 이동 *@
+                <button v-if="item4 == 'Y'" type="button" class="scheduleButton innerPopup" data-layer="departDateLayerWrapper" data-popup-target-id="divOtherDateSelectPopup">
+                    <i>출발일 선택</i>
+                </button>
+                <button v-else type="button" v-bind:data-src="item3 + (item4 == 'Y' ? item.Base_G_C : item.Goods_C)" onclick="GoGoodsDetail(this);">
+                    <i>상세 보기</i>
+                </button>
+                <input class="hidBaseGoodsCD" type="hidden" v-bind:value="item.Base_G_C" />
+                <input class="hidGoodsName" type="hidden" v-bind:value="item.Disp_G_N" />
+                <input class="hidGoodsNameSub" type="hidden" v-bind:value="item.Disp_G_N_S" />
+            </div>
+        </li>
+
+        @* 리스트 배너 객체 ( 1페이지에만 표시 ) *@
+        <li v-else-if="item2 != null && index == 4" class="banner">
+            @*<img v-bind:src="item2.Image_U" v-bind:alt="item2.Banner_N">*@
+
+            <a v-bind:href="item2.Lk">
+                <img v-bind:src="item2.Image_U" v-bind:alt="item2.Banner_N">
+            </a>
+        </li>
+
+    </script>
+    @* / Html Template : 상품 리스트 *@
+
+    <script type="text/javascript" defer>
+
+    /* API 분리 때문에 Cache 미사용 처리 */
+    $.ajaxSetup({cache:false});
+
+        /* 기초 데이터 */
+
+        // 데이터를 가져올수 있는지 여부
+        var checkPossibleGetData = true;
+
+        // 데이터 전송이 완료 되었는지
+        var isCompletedReq = true;
+
+        // Best Seller 데이터
+        var jsonForView = @Html.Raw(Model.ToString());
+
+        // 필터정보 객체
+        var filterItems =  {
+            goodsListPageNum : 0,
+            travelRange : '1|30',
+            minPrice : 0,
+            maxPrice : 9900000,
+            selectDay : '',
+            keyword : '',
+            isLastData : false,
+            reset: function () {
+                this.travelRange = '1|30',
+                this.minPrice = 0,
+                this.maxPrice = 9900000,
+                this.selectDay = '',
+                keyword = ''
+            }
+        }
+
+        // 상품리스트 부모 Vue 객체
+        var vmProductList = null;
+
+        /* / 기초 데이터 */
+
+        
+        // 카테고리 뷰 위치 이동
+        function SelectCurrentCategory(){            
+            //현재 선택된 카테고리로 스크롤 위치 이동
+            if($('.themeInner.overseas li.current').length > 0){
+                var overLeft = $('.themeInner.overseas li.current').offset().left - 50;
+                var overScroll = Scrollbar.get(document.getElementById('overseaSlide'));
+                overScroll.scrollTo(overLeft, 0, 100, '');
+            } 
+            if($('.themeInner.domestic li.current').length > 0){
+                var domLeft = $('.themeInner.domestic li.current').offset().left - 50;
+                var domScroll = Scrollbar.get(document.getElementById('domSlide'));
+                domScroll.scrollTo(domLeft, 0, 100, '');
+            } 
+        }
+
+        function ChangeSortCondition(){
+            
+            //초기화
+            filterItems.goodsListPageNum = 0;
+            //초기화후 바인딩
+            GoodsListBind();
+        }
+
+        // ajax 통신 2초후 랜더링 이미지 표시
+        function DelayLoadingImage(){
+            if(!isCompletedReq){
+                // 로딩 Layer 표시
+                _common.ShowLoadingImage();
+            }
+        }
+
+        // 상품 리스트 Bind
+        function GoodsListBind(){
+
+            // 첫페이지 시 기존 데이터 삭제
+            if(filterItems.goodsListPageNum == 0)
+            {
+                // 상품 리스트 초기화
+                vmProductList.$data.items = [];
+            }
+
+            isCompletedReq = false;
+        //setTimeout(DelayLoadingImage , 2000)
+
+        var goodsListAPIUrl = '';
+
+        if('@ViewBag.CateCD' == '158'){
+            goodsListAPIUrl = '/api/ThemeTourGoodsList/' + '@ViewBag.CateCD'                                          // cateCD
+                    + '/' + ((filterItems.keyword == '') ? 'null' : filterItems.keyword)                         // baseGoodsNM
+                    + '/' + ((filterItems.selectDay == '') ? 'null' : filterItems.selectDay)                     // departureDT
+                    + '/' + ((filterItems.travelRange == '') ? 'null' : filterItems.travelRange.split('|')[0])   // dayCntFrom
+                    + '/' + ((filterItems.travelRange == '') ? 'null' : filterItems.travelRange.split('|')[1])   // dayCntTo
+                    + '/' + ((filterItems.minPrice == '') ? '0' : filterItems.minPrice)                          // adultRateFrom
+                    + '/' + ((filterItems.maxPrice == '') ? '20000000' : filterItems.maxPrice)                    // adultRateTo
+                    + '/' + $('#conditionSort').val()                                                            // sort
+                    + '/' + '12'                                                                                 // pageSize
+                    + '/' + (filterItems.goodsListPageNum = Number(filterItems.goodsListPageNum) + 1);                     // pageNum
+        } else if('@ViewBag.CateCD' == '685') {
+            goodsListAPIUrl = '/api/DomesticThisWeekGoodsList/' + '@ViewBag.CateCD'                                          // cateCD
+                    + '/' + ((filterItems.keyword == '') ? 'null' : filterItems.keyword)                         // baseGoodsNM
+                    + '/' + ($('#domesticTrafficTab').length > 0 ? $('#domesticTrafficTab ul li.current').attr('data-cd') : '')           // TrafficCD
+                    + '/' + ((filterItems.travelRange == '') ? 'null' : filterItems.travelRange.split('|')[0])   // dayCntFrom
+                    + '/' + ((filterItems.travelRange == '') ? 'null' : filterItems.travelRange.split('|')[1])   // dayCntTo
+                    + '/' + ((filterItems.minPrice == '') ? '0' : filterItems.minPrice)                          // adultRateFrom
+                    + '/' + ((filterItems.maxPrice == '') ? '20000000' : filterItems.maxPrice)                    // adultRateTo
+                    + '/' + '12'                                                                                 // pageSize
+                    + '/' + (filterItems.goodsListPageNum = Number(filterItems.goodsListPageNum) + 1)                     // pageNum
+        } else {
+            goodsListAPIUrl = '/api/GoodsList/' + '@ViewBag.CateCD'                                          // cateCD
+                + '/' + ((filterItems.keyword == '') ? 'null' : filterItems.keyword)                         // baseGoodsNM
+                + '/' + ((filterItems.selectDay == '') ? 'null' : filterItems.selectDay)                     // departureDT
+                + '/' + 'null'                                                                               // startDT
+                + '/' + 'null'                                                                               // endDT
+                + '/' + ((filterItems.travelRange == '') ? 'null' : filterItems.travelRange.split('|')[0])   // dayCntFrom
+                + '/' + ((filterItems.travelRange == '') ? 'null' : filterItems.travelRange.split('|')[1])   // dayCntTo
+                + '/' + ((filterItems.minPrice == '') ? '0' : filterItems.minPrice)                          // adultRateFrom
+                + '/' + ((filterItems.maxPrice == '') ? '20000000' : filterItems.maxPrice)                    // adultRateTo
+                + '/' + $('#conditionSort').val()                                                            // sort
+                + '/' + '12'                                                                                 // pageSize
+                    + '/' + (filterItems.goodsListPageNum = Number(filterItems.goodsListPageNum) + 1)                     // pageNum
+                    + '/' + 'Y';                                             // fromMobileYN
+        }
+
+            $.ajax({
+                type: 'GET',
+                url: goodsListAPIUrl,
+                contentType: 'application/json; charset=utf-8',
+                beforeSend:function(){
+                    checkPossibleGetData = false;
+                },
+                success: function (data) {
+                    LoadListForm(data);
+                },
+                error: function(request, error) {
+                    alert("error:" + request.responseText);
+                },
+                complete : function() {
+                //// 로딩 Layer 숨김
+                //_common.HideLoadingImage();
+                //_common.HideLayerWithBackground();
+
+                    isCompletedReq = true;
+
+                //setTimeout(function(){
+                //    checkPossibleGetData = true;
+                //},2000);
+
+                        checkPossibleGetData = true;
+                }
+            });
+
+        $('#hidFilterCondition').val(filterItems.goodsListPageNum + "/" + filterItems.travelRange + "/" + filterItems.minPrice + "/" + filterItems.maxPrice + "/" + filterItems.selectDay + "/" + encodeURI(filterItems.keyword) + "/" + filterItems.isLastData);
+        }
+
+        // Api 로 가져온 상품 리스트를 Vue Data 에 추가
+        function LoadListForm(data)
+        {
+            @* 리스트 데이터 변경 후, 전체 개수 업데이트 *@
+            var tmpSearchedListCount;
+
+            if(data.length > 0)
+            {
+                for(i = 0; i< data.length ;i++){
+
+                    vmProductList.$data.items.push(data[i]);
+
+                    if(vmProductList.$data.items.length == 4)
+                    {
+                        // 광고 배너를 위한 데이터 삽입 ( Dummy 성 데이터 1회 추가 )
+                        vmProductList.$data.items.push(data[i]);
+                    }
+                }
+
+            // history back 을 위해 data 저장
+            if(isLocalStorageSupported())
+                sessionStorage.setItem("MobileListArray", JSON.stringify(vmProductList.$data.items));
+            }
+            else
+            {
+                filterItems.isLastData = true;
+
+            // 마지막 페이지까지 표시된 경우, 로딩 이미지 숨김
+            _common.DetachLoadingImage('imgLoading');
+
+                // 검색 결과 없을 경우, 안내 표시
+                if( vmProductList.$data.items.length == 0 && filterItems.goodsListPageNum == 1 )                    
+                {
+                    tmpSearchedListCount = 0;
+
+                    //// 검색 결과가 없을 경우, 결과 없음 표시
+                    //var nothingHtml = '<p id=\"pNoData\" class=\"no-data\">조회된 결과가 없습니다. </p>';
+                    //$('#vueProductList').html(nothingHtml);
+                }
+            }
+
+            // 검색 개수 표시
+        vmProductList.RefreshTotalListCount();
+
+            // 출발일 선택 버튼 Event Bind
+            $('.scheduleButton').filterLayerEvent();
+        }
+
+        // 화면 최하단으로 Scroll 시, 상품 리스트 추가로 Bind
+        function TourListScroll()
+        {
+            if(filterItems.isLastData)
+                return;
+
+            var scrollTop = $(window).scrollTop();
+            var domHeight = ($(document).height() - $(window).height());
+
+        // 스크롤이 최하단에 가까워질 경우, 목록 추가로 가져오기
+        if(( domHeight - scrollTop ) < 400 && checkPossibleGetData){
+                vmProductList.GoodsListBind();
+            }
+        }
+
+        // Vue : Goods Group Best Seller 인기상품
+        function GetBestSeller(){
+
+            vmVestSellerProduct = new Vue({
+                el: '#bestSellerProduct',
+                data: {
+                    items: jsonForView.BestSellerGoodsGroup,
+                },
+                methods: {
+                    GenerateLink: function (type, baseGoodsCD, goodsCD) {
+                        return _common.GoodsDetailPage(type, baseGoodsCD, goodsCD);
+                    },
+                    PlusIndex : function(index){
+                        var displayNum = index + 1;
+                        return _common.PadLeft(displayNum,2);
+                    }
+                }
+            })
+
+            // Swiper : Best Seller 인기상품 
+            if(jsonForView.BestSellerGoodsGroup != null){
+                // best proucts slider
+                bestProducts = new Swiper('.productsWrap', {
+                    wrapperClass: 'bestProductsInner',
+                    slideClass: 'bestProduct',
+                    slidesPerView: 'auto',
+                    spaceBetween: 20,
+                    freeMode: true
+                });
+            }
+        }
+
+        // 현재 LNB 메뉴 위치 이동
+        function SelectCurrentMenu(){
+
+            try{
+                var rootCateCD = $('#hddRootCateCD').val();
+
+                if(rootCateCD != '' && rootCateCD != 0){
+
+                    if(rootCateCD == 4 || rootCateCD == 51 || rootCateCD == 157)
+                        rootCateCD = 100;
+
+                    var menuOffsetLeft = $('.headerMenu ul li[data-catecd="' + rootCateCD + '"]').offset().left - 50;
+                    var scroll = Scrollbar.get(document.getElementById('lnbSlide'));
+                
+                    $('.headerMenu ul li').removeClass('current');
+                    $('.headerMenu ul li[data-catecd="' + rootCateCD + '"]').addClass('current');
+
+                    scroll.setPosition(menuOffsetLeft, 0)
+                }
+            } catch(e){
+                // 오류
+            }
+        }
+
+        // Vue : 상품 리스트의 부모 객체
+        function InitVue(){
+            vmProductList = new Vue({
+                el: '#vueProductList',
+                data: {
+                    //isReset: false,
+                    items: [],
+                    itemListBanner: jsonForView.ListBanner,
+                mtourDomainForGoodsDetail: ('@ViewBag.CateCD' == '685') ? '@ViewBag._MtourDomain' + '/tour/Goods.aspx?goodsCD=' : '@ViewBag._MtourDomain' + '/tour/Goods.aspx?baseGoodsCD=',
+                itemBaseGoodsYN : ('@ViewBag.CateCD' == '685') ? 'N' : 'Y'
+                },
+                mounted: function(){
+
+                    @* 리스트 데이터 변경 후, 다른 출발일 보기 이벤트 바인드 ( ES6 를 지원하지 않는 브라우저를 위한 코드 ) *@
+                    var listParent = $('#vueProductList');
+
+                    $(listParent).on('DOMSubtreeModified', function() {
+                        $('.innerPopup').innerLayer();
+                    })
+                },
+                methods : {
+                    GoodsListBind : GoodsListBind
+                    , RefreshTotalCount : function() {
+                        totalCount = this.items[0].List_C;
+                        },
+                RefreshTotalListCount: function() {
+                    // 검색 개수 구하기
+                    if(this.$data.items.length != 0)
+                        tmpSearchedListCount = this.$data.items[0].List_C;
+                    else
+                        tmpSearchedListCount = 0;
+
+                    // 검색 개수 표시
+                    $('#totalCount').text(tmpSearchedListCount);
+                    }
+                }
+                ,computed :{
+                    totalCount : function() {
+                        return this.items[0].List_C;
+                    }
+                }
+                ,watch: {
+                    items: function (val) {
+
+                        @* 리스트 데이터 변경 후, 다른 출발일 보기 이벤트 바인드 *@
+                        //this.$nextTick(() => {
+                            //$('.innerPopup').innerLayer();
+                        //});
+                    }
+                }
+            })
+        }
+
+        // 출발일보기 레이어 조회
+        function CallGoodsListByDepartureWithCalendar_Mobile(basegoodscd)
+        {
+            $.ajax({
+                type: 'GET',
+                url: '/Iframe/GoodsListByDepartureWithCalendar_Mobile',
+                data: {
+                    cateCD : @viewCateCD,
+                    baseGoodsCD : basegoodscd
+                },
+                success: function (result) {                    
+                    $('#divOtherDateContents').html(result);
+                },
+                error: function (result) {
+                    alert("출발일 레이어 조회에 실패하였습니다.");
+                },
+                complete: function (data) {}
+            });
+        }
+       
+    function ChangeDomesticThisWeekTab(trafficCD){
+
+        // filter 초기화
+        filterItems =  {
+            goodsListPageNum : 0,
+            travelRange : '1|30',
+            minPrice : 0,
+            maxPrice : 9900000,
+            selectDay : '',
+            keyword : '',
+            isLastData : false,
+            reset: function () {
+                this.travelRange = '1|30',
+                this.minPrice = 0,
+                this.maxPrice = 9900000,
+                this.selectDay = '',
+                keyword = ''
+            }
+        }
+
+        // 선택 탭 변경
+        if($('#domesticTrafficTab').length > 0){            
+            $('#domesticTrafficTab ul li.current').removeClass('current');
+            $('#domesticTrafficTab ul li[data-cd='+trafficCD+']').addClass('current');
+        } 
+
+        vmProductList.GoodsListBind();
+    }
+
+    function GoGoodsDetail(obj){        
+        if(obj != undefined && obj != null){
+            var src = $(obj).attr('data-src');
+            if(src != undefined && src != null){                
+                window.location.href = src;
+            } 
+        }
+    }
+
+    function isLocalStorageSupported() { 
+        var isLocalStorageKey = 'isLocalStorageKey', storage = window.localStorage; 
+        
+        try { 
+            storage.setItem(isLocalStorageKey, 'true'); // storage가 undefined인 경우 브라우져가 지원 안 함, setItem 하다가 QuotaExceededError가 일어나면 private browsing으로 막혀져 있음 
+            storage.removeItem(isLocalStorageKey); 
+            return true; 
+        } catch (error) { 
+            return false; 
+        } 
+    }
+
+
+        /* 출발일선택 레이어 */
+        $(document).ready(function () {
+
+        _common.AttachLoadingImage('divLoadingImage', 'imgLoading');
+
+        // filter Value Check
+        if($('#hidFilterCondition').val() != "" && $('#hidFilterCondition').val() != undefined){
+            var conditionArr = $('#hidFilterCondition').val().split('/');
+
+            if(conditionArr.length == 7){
+                filterItems.goodsListPageNum = conditionArr[0];
+                filterItems.travelRange = conditionArr[1];
+                filterItems.minPrice = conditionArr[2];
+                filterItems.maxPrice = conditionArr[3];
+                filterItems.selectDay = conditionArr[4];
+                filterItems.keyword = decodeURI(conditionArr[5]);
+                filterItems.isLastData = conditionArr[6] == 'false' ? false : true;
+            }
+
+            // SearchFilter 페이지 Function Call
+            SelectFilterData();
+        }
+
+            $(document.body).on('click', 'div.products button.scheduleButton', function (e) {
+
+                var baseGoodsCD = $(this).parent().find('.hidBaseGoodsCD').val();
+                CallGoodsListByDepartureWithCalendar_Mobile(baseGoodsCD);
+
+                $('#GoodsNM').text($(this).parent().find('.hidGoodsName').val());
+                $('#subGoodsNM').text($(this).parent().find('.hidGoodsNameSub').val());
+            });
+
+            // Vue Component : 상품 리스트 ( li )
+            Vue.component('cp-list-form' , {
+                template :'#cp-list-form-template'
+            ,props : ['index', 'item', 'item2', 'item3', 'item4']
+            });
+
+            // Vuew 초기화
+            InitVue();
+
+            // 이벤트 바인드
+        $(window).on("scroll", TourListScroll);
+
+            // 필터 영역 스크립트 
+            $('.filterButton a').filterLayerEvent();
+
+        @* 필터 정보가 없을 경우, 최초 로드 *@
+        if($('#hidFilterCondition').val() == '')
+        {
+            // 상품 리스트
+            vmProductList.GoodsListBind();
+        }
+        else
+        {
+            @* history back 의 경우 기존 list 내용 재바인딩 *@
+            if(isLocalStorageSupported())
+                vmProductList.$data.items = JSON.parse(sessionStorage.getItem("MobileListArray"));
+            else
+                vmProductList.GoodsListBind();
+
+            @* 검색 개수 표시 *@
+            vmProductList.RefreshTotalListCount();
+        }
+
+            // Best Seller 인기상품
+            GetBestSeller();
+
+            // GA트래킹용
+            fnGA_AddPageDepth(fnGA_AddPageDepthByRootCateCD($('#hddRootCateCD').val()));
+        });      
+
+    // with Safari(All Browser) PageLoad Event
+    //$(window).bind("pageshow", function(event) {
+    //});
+
+    </script>
+
+    }
+<div class="travelSearchWrapper">
+    <h1 class="description">여행</h1>
+
+    @*모바일 내비게이션*@
+    @{
+        Html.RenderAction("__Navigation_Mobile", "SharedControl", new { cateCd = ViewBag.CateCD });
+    }
+
+    @* Best Seller 인기상품( 슬라이드 ) *@
+    <div id="bestSellerProduct" v-if="items != null" class="bestProductsWrap">
+        <h2>
+            <em>Best Seller</em>인기상품
+        </h2>
+        <div class="productsWrap">
+            <ul class="bestProductsInner">
+                <li v-for="(item,index) in items" class="bestProduct" style="margin-right: 20px;">
+                    <a v-bind:href="GenerateLink(item.Goods_T, item.Base_G_C, item.Goods_C)">
+                        <div class="prodImg">
+                            <img v-bind:src="item.Image_U_F_L" alt="상품이미지" onerror="_common.SetDefaultImg(this,90)">
+                        </div>
+                        <div class="prodInfoWrap">
+                            <div class="prodInfo">{{item.Add_V_1}}</div>
+                            <div class="prodTitle">{{item.Disp_G_N}}</div>
+                            <div class="prodPrice">
+                                <span class="number">{{item.Min_A_R_W_C}}</span>
+                                <i class="unit">원~</i>
+                            </div>
+                        </div>
+                        <span class="tag">{{ PlusIndex(index) }}</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+    @* / Best Seller 인기상품( 슬라이드 ) *@
+
+    <div class="searchResultWrap">
+        <h2 class="description">검색 상품 리스트</h2>
+        <div class="topWrap clfix">
+            <div class="resultWrap">
+                상품 검색 결과
+                <strong id="totalCount">0</strong>건
+            </div>
+            @* 내륙테마는 조건적용이 불가, 정렬 변경 및 필터 제거 *@
+            @if (viewCateCD != 685)
+            {
+            <div class="conditionWrap">
+                <span class="sortButton">
+                    <select name="range" id="conditionSort" onchange="ChangeSortCondition(this)">
+                        <option value="D" selected="">추천순</option>
+                        <option value="C">인기순</option>
+                        <option value="A">최저가순</option>
+                        <option value="B">최고가순</option>
+                    </select>
+                </span>
+                <span class="filterButton">
+                    <a id="btnFilter" href="#" data-layer="filterLayerWrapper">필터</a>
+                </span>
+            </div>
+            }
+        </div>
+        <div class="productsWrap">
+            <p class="notice">항공권 또는 항공권이 포함된 상품의 경우 표시되는 상품 요금은 예상 유류할증료와 제세공과금이 포함된 가격이며, 발권일/환율 등에 따라 변동될 수 있습니다.</p>
+            @* 내륙테마는 버스, 기차 필터링 Tab 제공 *@
+            @if (viewCateCD == 685)
+            {
+                <div class="tabWrap">
+                    <div id="domesticTrafficTab" class="tabInner">
+                        <ul>
+                            <li class="current" data-cd="103"><a onclick="ChangeDomesticThisWeekTab(103);">버스여행</a></li>
+                            <li data-cd="102"><a onclick="ChangeDomesticThisWeekTab(102);">기차여행</a></li>
+                        </ul>
+                    </div>
+                </div>
+            }
+            @* 상품검색 기초상품 리스트 *@
+            <div id="vueProductList"  class="products">
+                <ul v-if="items != null">
+                    <li is="cp-list-form" v-for="(item, index) in items" v-bind:index="index" v-bind:item="item" v-bind:item2="itemListBanner" v-bind:item3="mtourDomainForGoodsDetail" v-bind:item4="itemBaseGoodsYN"></li> 
+                </ul>
+
+                <p v-if="items.length == 0" id="pNoData" class="noResultWrap">조회된 결과가 없습니다. </p>
+            </div>
+            @* / 상품검색 기초상품 리스트 *@
+
+        </div>
+
+        @* Loading Image 가 표시될 div *@
+        <div id="divLoadingImage" style="text-align: center;margin-top:30px;"></div>
+
+    </div>
+</div>
+
+<!-- Category Menu Layer -->
+@{Html.RenderAction("CategoryView_mobile", "Iframe", new { cateCD = ViewBag.CateCD });}
+<!-- / Category Menu Layer -->
+
+
+@* Search Filter *@
+@{ Html.RenderAction("SearchFilter", "Iframe"); }
+@* / Search Filter *@
+
+
+@* 출발일보기 *@
+<div id="divOtherDateSelectPopup" class="innerPopupWrapper">
+    <h1>다른 출발일 선택</h1>
+    <span class="closeButton">
+        <a href="javascript:;" class="layerClose"><span>닫기</span></a>
+    </span>
+    <div class="popupContentsWrap">
+        <div class="topWrap">
+            <span class="subTitle" id="subGoodsNM">서브타이틀</span>
+            <span class="title" id="GoodsNM">
+                <strong>★최고인기! 푸켓 5일★호텔/관광/휴양/워터파크 선택가능</strong>
+            </span>
+        </div>
+
+        @*다른 출발일 달력 + 리스트 영역*@
+        <div id="divOtherDateContents"></div>
+        @*다른 출발일 달력 + 리스트 영역*@
+
+    </div>
+</div>
+@* 출발일보기 *@
+
+
+@* 검색조건 Filter Data *@
+<input type="hidden" id="hidFilterCondition" value="" />
+@* 검색조건 Filter Data *@

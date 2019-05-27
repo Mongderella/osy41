@@ -1,0 +1,138 @@
+﻿@using TOUR.THETRAVEL.CO.KR.MODEL.VIEWS.ViewModelsSharedControl_Mobile;
+
+@using System.Data;
+@using System.Collections.Generic;
+@using System.Reflection;
+
+@model List<ViewModelCalendar>
+    
+@{
+    // \Scripts\Views\Common_Mobile\calendarCustom.js 파일에서 이벤트 처리
+    
+    string displayStDate = string.Empty;
+    string today = DateTime.Now.ToString("yyyyMMdd");
+    int iMaxMonthInDay = 31;
+    bool iMaxDay = false;
+
+    if (ViewBag.stDate != null && !string.IsNullOrEmpty(ViewBag.stDate))
+    {
+        DateTime stDate = DateTime.ParseExact(ViewBag.stDate, "yyyyMMdd", System.Globalization.CultureInfo.InvariantCulture);
+        iMaxMonthInDay = DateTime.DaysInMonth(stDate.Year, stDate.Month);
+        displayStDate = stDate.ToString("yyyy.MM");   
+    }
+}
+
+@try
+{
+    if (Model != null && Model.Count > 0)
+    {   
+        <div class="calendarContents">
+            <div class="weeklyWrap">
+                <ul>
+                    <li>일</li>
+                    <li>월</li>
+                    <li>화</li>
+                    <li>수</li>
+                    <li>목</li>
+                    <li>금</li>
+                    <li>토</li>
+                </ul>
+            </div>
+            <div class="calendarSelectWrap">
+                <div class="calendarWrap">
+                    <div class="calendarContentsWrap">
+                        <div class="monthYearWrap">
+                            <div class="monthYear">@displayStDate</div>
+                        </div>
+                        <div class="calendarTableWrap">
+                            <table class="calendarTable">
+                                <tbody>
+                                    @for (int i = 0; i < Model.Count; i++)
+                                    {
+                                        // 달력 그리기                                    
+                                        ViewModelCalendar item = Model[i];
+                                        if (!iMaxDay)
+                                        { 
+
+                                        <tr>
+                                            @for (int j = 1; j < item.GetType().GetProperties().Length; j++ )                                        
+                                            {
+                                                PropertyInfo info = item.GetType().GetProperties()[j];
+                                            
+                                                string itemValue = info.GetValue(item) as string;
+                                                string strDay = string.Empty;
+                                                string iHolydayYN = string.Empty;
+                                                string strClass = "thisMonth";
+                                                string strSubClass = string.Empty;
+                                                string strSubAlterText = string.Empty;
+                                                string itemDate = "";
+                                                string iGoodsYN = "N";
+
+                                                if (!string.IsNullOrEmpty(itemValue) && !iMaxDay)
+                                                {
+                                                    strDay = itemValue.Split('-')[0].ToString();
+                                                    itemDate = itemValue.Split('-')[1].ToString();
+                                                    if (itemDate.Equals(today))
+                                                    {
+                                                        strSubClass = "today";
+                                                        strSubAlterText = "TODAY";
+                                                    }                                                    
+                                                    iHolydayYN = itemValue.Split('-')[4].ToString();
+                                                    if (iHolydayYN.Trim().ToUpper().Equals("Y"))
+                                                    {
+                                                        strSubClass += " holiday";
+                                                    }
+
+                                                    if (iMaxMonthInDay <= Convert.ToInt32(strDay.Trim()))
+                                                    {
+                                                        iMaxDay = true;
+                                                    }
+
+                                                    iGoodsYN = itemValue.Split('-')[2].ToString();
+                                                }
+                                                else
+                                                {
+                                                    strClass = "prevMonth";
+                                                }
+                                                
+                                                <td class="@strClass @strSubClass" j-date="@itemDate" j-useyn="@iGoodsYN">
+                                                    <div>
+                                                        <span>@strDay</span>
+                                                        <em class="alterText @strSubClass">@strSubAlterText</em>
+                                                    </div>
+                                                </td>
+
+                                            }
+
+                                        </tr>
+                                    
+                                        }
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="calendarBtnWrap">
+                        <button class="prev button" type="button">
+                            <span>이전달</span>
+                        </button>
+                        <button class="next button" type="button">
+                            <span>다음달</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+
+}
+catch (Exception ex)
+{
+    InterparkTour.Front.App_Code.Common.HelperNLog.WriteNLog4Views(Request.Url.OriginalString, ex.ToString());
+}
+
+
+
+
+   

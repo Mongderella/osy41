@@ -1,0 +1,10 @@
+User-agent: Daum
+Crawl-delay: 60
+Disallow: /home0/
+Allow: /home1
+
+
+User-agent: *
+Crawl-delay: 600
+Disallow: /home0/
+Allow: /home1

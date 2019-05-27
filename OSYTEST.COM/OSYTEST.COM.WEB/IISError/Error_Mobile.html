@@ -1,0 +1,114 @@
+﻿<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="utf-8">
+    <title>인터파크투어 여행</title>
+
+    <meta name="description" content="투어 Mobile">
+    <meta name="author" content="INTERPARK">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <meta name="format-detection" content="telephone=no">
+
+    <link rel="stylesheet" type="text/css" href="http://mTOUR.THETRAVEL.CO.KR/css/error/error.css" />
+
+    <script src="/Scripts/jquery-1.10.2.mobile.min.js"></script>
+    <script src="/Scripts/Views/Common_Mobile/Common.js"></script>
+
+    <!-- 전체 카테고리  -->
+    <script src="//mTOUR.THETRAVEL.CO.KR/js/menu.js"></script>
+    <script src="//mTOUR.THETRAVEL.CO.KR/js/appPopup.js"></script>
+    <script src="//mTOUR.THETRAVEL.CO.KR/app/js/interface.js"></script>
+    <!-- / 전체 카테고리  -->
+
+    <script type="text/javascript">
+
+            var _isAppForClinet = _common.GetIsApp();
+            var _appTypeForClient = _common.IsInsideMobileAppType();
+
+
+            $(document).ready(function (e) {
+
+                //// Hide Footer ( Layout 을 저해하는 요소 숨김 )
+                //$('footer').css('display', 'none');
+
+                // 여행 LNB 슬라이드 카테고리 Anchor
+                $('#slideTourCategory > li > a').on('click', function (e) {
+                    location.href = $(this).attr('href');
+                });
+
+                // App 일 경우 최상단 mbody 와 topFixedWrapper 의 top, margin-top 을 0 으로 설정
+                if (_isAppForClinet == true) {
+                    $(".mBody").css("top", "0px");
+                    $(".mBody").css("margin-top", "0px");
+                    $(".topFixedWrapper").css("top", "0px");
+                    $(".topFixedWrapper").css("margin-top", "0px");
+                }
+
+                //// Show Parent Div
+                //$('#error-404').css('display', 'block');
+
+                // 이전 페이지 
+                $('#btnHistoryBack').on('click', function () {
+                    history.back(1);
+                });
+
+                // 홈 화면으로 이동
+                $('#btnMainBack').on('click', function () {
+                    location.href = 'http://mTOUR.THETRAVEL.CO.KR';
+                });
+
+                // Catch Error Code
+                var tmpErrorCode = GetParam('code');
+
+                if (tmpErrorCode != '')
+                {
+                    var postfixSentence = '({0})';
+                    postfixSentence = postfixSentence.replace('{0}', tmpErrorCode);
+
+                    $('#spGuideMsg_2').text($('#spGuideMsg_2').text() + postfixSentence);
+                }
+            });
+    </script>
+
+</head>
+<body id="error-404">
+    
+    <!-- Header -->
+
+    <script type="text/javascript">
+
+        if (_isAppForClinet == false && _appTypeForClient != "shopping")
+        {
+            var headerHtml = "<script src=\"http://mTOUR.THETRAVEL.CO.KR/js/header.js\"><\/script>";
+
+            document.write(headerHtml);
+        }
+
+    </script>
+
+    <!-- / Header -->
+
+
+    <!-- contents Start -->
+
+    <div class="container">
+        <div class="contentsWrapper">
+        <div class="errorWrapper">
+            <span class="imgWrap">
+            <img src="http://openimage.interpark.com/tourpark/tour/mobile/error/error_character.png" alt="설레양"> </span>
+            <span id="spGuideMsg_1" class="textWrap"> 죄송합니다.</span>
+            <span id="spGuideMsg_2" class="textWrap">페이지를 찾을수 없습니다.</span>
+        </div>
+        <div class="buttonWrapper">
+            <button type="button" id="btnHistoryBack" class="historyBtn">이전 페이지로 이동</button>
+            <button type="button" id="btnMainBack"class="gohomeBtn">홈 화면으로 이동</button>
+        </div>
+        </div>
+    </div>
+
+    <!-- contents End -->
+
+
+</body>
+
+</html>

@@ -1,0 +1,89 @@
+﻿@{
+    // Set Robot Meta Tag
+    //string Meta_Robots = HelperMetaTags.SetRobotMetaTag(Request);
+}
+
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <title>@ViewBag.Site_Title</title>
+
+    <meta charset="utf-8">
+
+
+    @* # Set Meta Tag *@
+
+    @if (!string.IsNullOrEmpty(ViewBag.Meta_Keywords) && !string.IsNullOrEmpty(ViewBag.Meta_Description))
+    {
+        @Html.Raw(ViewBag.Meta_Keywords)
+        @Html.Raw(ViewBag.Meta_Description)
+        @Html.Raw(ViewBag.Meta_Images)
+    }
+
+    @*@Html.Raw(Meta_Robots)*@
+
+    @* / # Set Meta Tag *@
+
+
+    @* Import CSS From Child *@
+    @RenderSection("StyleInLayout", false)
+
+    
+    @* Import CSS *@
+    @*@Styles.Render("~/bundles/css_free_renewal")*@
+    <link rel="stylesheet" type="text/css" href="@HelperFile.GetJsWithVersionCode("/global/css/layout.css")">
+    <link rel="stylesheet" type="text/css" href="@HelperFile.GetJsWithVersionCode("/global/css/ui_common.css")">
+    <link rel="stylesheet" type="text/css" href="@HelperFile.GetJsWithVersionCode("/global/css/ui_module.css")">
+
+
+    @* Import Bundle JS *@
+    @Scripts.Render("~/bundles/js_free_renewal")
+
+
+    @* Import Bundle Js ( Defer ) *@
+    @Scripts.RenderFormat("<script src='{0}' defer></script>", "~/bundles/js_mobile_defer")
+
+
+    <script type="text/javascript">
+
+    </script>
+
+
+    @* Import JS From Child *@
+    @RenderSection("ScriptInLayout", false)
+
+
+</head>
+<body id="">
+    <div id="dHead">
+        <script type="text/javascript" src="@HelperFile.GetJsWithVersionCode("/global/js/html/headArea_N.js")" charset="euc-kr"></script>
+
+        <div class="gate-cover">
+            <!-- GNB 하단 전체메뉴, 전문몰, 네비게이션 부분 -->
+            <div id="gateSection" class="ui-gate-section">
+                <script type="text/javascript" src="@HelperFile.GetJsWithVersionCode("/global/js/html/categoryView_N.js")" charset="euc-kr"></script>
+            </div>
+
+            <!-- 2d -> 3d Depth 를 표시 -->
+            @*@Helpers_Control_History.NavigationBar(tmpCateCD)*@
+        </div>
+    </div>
+
+    <hr class="access">
+
+    @* # Sub Page 영역 *@
+
+    @RenderBody()
+
+    @* / # Sub Page 영역 *@
+
+    <div id="asdieFixedBar" name="asdieFixedBar" class="asdie-fixed on" style="display:none;">
+        <script type="text/javascript" src="@HelperFile.GetJsWithVersionCode("/global/js/html/FixedBannerArea_N.js")" charset="euc-kr"></script>
+    </div>
+
+    <hr class="access">
+    <div id="footArea">
+        <script type="text/javascript" src="@HelperFile.GetJsWithVersionCode("/global/js/html/footArea_N.js")" charset="euc-kr"></script>
+    </div>
+</body>
+</html>

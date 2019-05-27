@@ -1,0 +1,154 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>INTERPARKTOUR.ENCRYPT</name>
+    </assembly>
+    <members>
+        <member name="T:INTERPARKTOUR.ENCRYPT.HelperRSA">
+            <summary>
+            RSA 암호화 알고리즘 클래스
+            </summary>
+        </member>
+        <member name="M:INTERPARKTOUR.ENCRYPT.HelperRSA.RSAEncrypt(System.String)">
+            <summary>
+            Plain Text 를 RSA 암호화 알고리즘으로 암호화하고 그 값을 반환합니다.
+            </summary>
+            <param name="plainText"></param>
+            <param name="publicKey"></param>
+            <returns></returns>
+        </member>
+        <member name="M:INTERPARKTOUR.ENCRYPT.HelperRSA.RSADecrypt(System.String)">
+            <summary>
+            Ciphered Text 를 RSA 알고리즘으로 복고화하고 그 값을 반환합니다.
+            </summary>
+            <param name="cipheredText"></param>
+            <param name="privateKey"></param>
+            <returns></returns>
+        </member>
+        <member name="T:INTERPARKTOUR.ENCRYPT.HelperSEED">
+            <summary>
+            DESCRIOPTION : 암/복호화 Seed 모듈 사용을 위한 클래스
+            DATE         : 2017-01-03
+            CREATOR      : DAN LEE
+            </summary>
+        </member>
+        <member name="M:INTERPARKTOUR.ENCRYPT.HelperSEED.DecryptForBytes(System.Byte[],System.String)">
+            <summary>
+            암호화 된 byte 배열을 복호화하여 반환합니다.
+            </summary>
+            <param name="cypheredBytes">암호화 byte 배열</param>
+            <param name="cypherKey">암/복호화 Key</param>
+            <returns></returns>
+        </member>
+        <member name="M:INTERPARKTOUR.ENCRYPT.HelperSEED.DecryptForBytes(System.Byte[])">
+            <summary>
+            내장된 Cyper Key 를 사용하여 암호화 된 byte 배열을 복호화하여 반환합니다.
+            </summary>
+            <param name="cypheredBytes">암호화 byte 배열</param>
+            <returns></returns>
+        </member>
+        <member name="M:INTERPARKTOUR.ENCRYPT.HelperSEED.Decrypt(System.String,System.String)">
+            <summary>
+            암호화 된 TEXT 를 복호화하여 반환합니다.
+            </summary>
+            <param name="cypheredText">암호화된 TEXT</param>
+            <param name="cypherKey">암/복호화 Key</param>
+            <returns></returns>
+        </member>
+        <member name="M:INTERPARKTOUR.ENCRYPT.HelperSEED.Decrypt(System.String)">
+            <summary>
+            내장된 Cyper Key 를 사용하여 암호화 된 TEXT 를 복호화하여 반환합니다.
+            </summary>
+            <param name="cypheredText">암호화된 TEXT</param>
+            <returns></returns>
+        </member>
+        <member name="M:INTERPARKTOUR.ENCRYPT.HelperSEED.DecryptForApp(System.String)">
+            <summary>
+            내장된 Cyper Key 를 사용하여 암호화 된 TEXT 를 복호화하여 반환합니다. ( App 용 )
+            </summary>
+            <param name="cypheredText">암호화된 TEXT</param>
+            <returns></returns>
+        </member>
+        <member name="M:INTERPARKTOUR.ENCRYPT.HelperSEED.DecryptWithDecode(System.String,System.String)">
+            <summary>
+            암호화 + Encoding 된 TEXT 와 암호화 키를 인자로 받아 복호화하여 반환합니다.
+            </summary>
+            <param name="cypheredText">암호화된 TEXT</param>
+            <param name="cypherKey">암/복호화 Key</param>        
+            <returns></returns>
+        </member>
+        <member name="M:INTERPARKTOUR.ENCRYPT.HelperSEED.DecryptWithDecode(System.String)">
+            <summary>
+            내장된 Cyper Key 를 사용하여 암호화 + Encoding 된 TEXT 를 복호화하여 반환합니다.
+            </summary>
+            <param name="cypheredText">암호화된 TEXT</param>
+            <returns></returns>
+        </member>
+        <member name="M:INTERPARKTOUR.ENCRYPT.HelperSEED.EncryptForBytes(System.Byte[],System.String)">
+            <summary>
+            암호화 키를 사용해 평문 byte 배열을 암호화하여 반환합니다.
+            </summary>
+            <param name="plainBytes">평문 byte 배열</param>
+            <param name="cypherKey">암/복호화 Key</param>
+            <returns></returns>
+        </member>
+        <member name="M:INTERPARKTOUR.ENCRYPT.HelperSEED.EncryptForBytes(System.Byte[])">
+            <summary>
+            내장된 Cyper Key 를 사용해 평문 byte 배열을 암호화하여 반환합니다.
+            </summary>
+            <param name="plainBytes">평문 byte 배열</param>
+            <returns></returns>
+        </member>
+        <member name="M:INTERPARKTOUR.ENCRYPT.HelperSEED.Encrypt(System.String,System.String)">
+            <summary>
+            암호화 키를 이용해 평문을 암호화하여 반환합니다.
+            </summary>
+            <param name="plainText">평문 TEXT</param>
+            <param name="cypherKey">암/복호화 Key</param>
+            <returns></returns>
+        </member>
+        <member name="M:INTERPARKTOUR.ENCRYPT.HelperSEED.Encrypt(System.String)">
+            <summary>
+            내장된 Cyper Key 를 사용해 평문을 암호화하여 반환합니다.
+            </summary>
+            <param name="plainText">평문 TEXT</param>
+            <returns></returns>
+        </member>
+        <member name="M:INTERPARKTOUR.ENCRYPT.HelperSEED.EncryptForApp(System.String)">
+            <summary>
+            내장된 Cyper Key 를 사용해 평문을 암호화하여 반환합니다. ( App 용 )
+            </summary>
+            <param name="plainText">평문 TEXT</param>
+            <returns></returns>
+        </member>
+        <member name="M:INTERPARKTOUR.ENCRYPT.HelperSEED.EncryptWithEncode(System.String,System.String)">
+            <summary>
+            암호화 키를 이용하여 암호화하고 Encode 처리한 평문을 반환합니다.
+            </summary>
+            <param name="plainText">평문 TEXT</param>
+            <param name="cypherKey">암/복호화 Key</param>
+            <returns></returns>
+        </member>
+        <member name="M:INTERPARKTOUR.ENCRYPT.HelperSEED.EncryptWithEncode(System.String)">
+            <summary>
+            암호화 키를 이용하여 암호화하고 Encode 처리한 평문을 반환합니다.
+            </summary>
+            <param name="plainText">평문 TEXT</param>
+            <returns></returns>
+        </member>
+        <member name="T:INTERPARKTOUR.ENCRYPT.SEED">
+            <summary>
+            DESCRIOPTION : CBC 블럭 암/복호화를 지원하는 Seed 모듈
+            DATE         : 2017-01-03
+            CREATOR      : DAN LEE
+            </summary>
+        </member>
+        <member name="M:INTERPARKTOUR.ENCRYPT.SEED.GenerateCypherKey(System.String)">
+            <summary>
+            인자로 전달받은 문자열을 Byte 배열로 변환하고, 그 값을 반환합니다. ( DAN LEE )
+            </summary>
+            <param name="cypherKey">암호화 키 (평문 16자 )</param>
+            <returns></returns>
+        </member>
+    </members>
+</doc>

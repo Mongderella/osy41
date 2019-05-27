@@ -1,0 +1,64 @@
+﻿using TOUR.THETRAVEL.CO.KR.MODEL.VIEWS_GLOBAL.ViewModelsGlobal_Mobile;
+
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Data;
+using System.Linq;
+using System.Net;
+using System.Net.Http;
+using System.Web.Http;
+
+
+namespace TOUR.THETRAVEL.CO.KR.WEB.App_Code._MvcGlobal.Controllers.API
+{
+    public class GoodsGroupController : ApiController
+    {
+        // GET api/<controller>/<
+        public IEnumerable<ViewModelGoodsGroup> Get(int pageGroupCD, int cateCD, int seq)
+        {
+            using (TOUR.THETRAVEL.CO.KR.BLL.VIEWS_GLOBAL.Global BLL = new TOUR.THETRAVEL.CO.KR.BLL.VIEWS_GLOBAL.Global())
+            {
+                return BLL.GetGoodsGroup(pageGroupCD, cateCD, seq);
+            }
+        }
+
+        //// GET api/<controller>/5
+        //public string Get(int id)
+        //{
+        //    return "value";
+        //}
+
+        //// POST api/<controller>
+        ///// <summary>
+        ///// 
+        ///// </summary>
+        ///// <param name="pollSeq"></param>
+        ///// <param name="answer"></param>
+        ////[NLogExceptionfilter]
+        //public void Post(int pollSeq, string answer)
+        //{
+        //    Hashtable htPollAnswer = new Hashtable();
+        //    htPollAnswer.Add("PollSeq", pollSeq);
+        //    htPollAnswer.Add("Answer", answer.Substring(0, 1));
+
+        //    if (User.Identity.IsAuthenticated)
+        //    {
+        //        htPollAnswer.Add("MemberID", CommonUtil.GetCookieDecryptValue("interparkID"));
+        //        htPollAnswer.Add("MemberNo", User.Identity.Name);
+        //    }
+
+        //    TourDbAccess.ExecuteNonQuery("usp_FR_Admin_Tourpoll_WithGoodsGroup_Answer_Ins", htPollAnswer);
+        //}
+
+        //// PUT api/<controller>/5
+        //public void Put(int id, [FromBody]string value)
+        //{
+        //}
+
+        //// DELETE api/<controller>/5
+        //public void Delete(int id)
+        //{
+        //}
+    }
+}

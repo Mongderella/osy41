@@ -1,0 +1,119 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>INTERPARKTOUR.UTIL</name>
+    </assembly>
+    <members>
+        <member name="M:INTERPARKTOUR.UTIL.HelperSecurity.WithoutInjectionCharacters(System.String,System.Boolean@)">
+            <summary>
+            XSS Injection 공격에 사용되는 Single quotation, Dobule quotation 을 제거한 값을 리턴합니다.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:INTERPARKTOUR.UTIL.HelperCommon.#cctor">
+            <summary>
+            INTERPARKTOUR.UTIL.COMMON 클래스의 생성자
+            </summary>
+        </member>
+        <member name="M:INTERPARKTOUR.UTIL.HelperCommon.InitCommonAndNLog">
+            <summary>
+            Setting For NLog in Codes 
+            </summary>
+        </member>
+        <member name="M:INTERPARKTOUR.UTIL.HelperCommon.GetAssemblyConfigPath">
+            <summary>
+            현재 Assembly 가 존재하는 물리적 경로를 반환합니다.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:INTERPARKTOUR.UTIL.HelperCommon.GetEntryAssemblyFolderName">
+            <summary>
+            현재 Assembly 가 존재하는 물리적 폴더명을 반환합니다.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:INTERPARKTOUR.UTIL.HelperCommon.GetAssemblySetting(System.String)">
+            <summary>
+            Json Object 에서 AssemblySettings 에 속한 Key 값을 매개변수로 받아 해당 값을 반환합니다.
+            </summary>
+            <param name="keyName"></param>
+            <returns></returns>
+        </member>
+        <member name="M:INTERPARKTOUR.UTIL.HelperCommon.RegisterLogForHelperCommon(System.String)">
+            <summary>
+            INTERPARKTOUR.UTIL.HelperCommon 에서 생성되는 ERROR 를 NLOG 로 등록합니다.
+            </summary>
+            <param name="message"></param>
+        </member>
+        <member name="M:INTERPARKTOUR.UTIL.HelperCommon.RegisterLogForHelperFile(System.String)">
+            <summary>
+            INTERPARKTOUR.UTIL.HelperFile 에서 생성되는 ERROR 를 NLOG 로 등록합니다.
+            </summary>
+            <param name="message"></param>
+        </member>
+        <member name="M:INTERPARKTOUR.UTIL.HelperCommon.RegisterLogForHelperNetwork(System.String)">
+            <summary>
+            INTERPARKTOUR.UTIL.HelperNetwork 에서 생성되는 ERROR 를 NLOG 로 등록합니다.
+            </summary>
+            <param name="message"></param>
+        </member>
+        <member name="M:INTERPARKTOUR.UTIL.HelperCommon.RegisterLogForHelperSecurity(System.String)">
+            <summary>
+            INTERPARKTOUR.UTIL.HelperSecurity 에서 생성되는 ERROR 를 NLOG 로 등록합니다.
+            </summary>
+            <param name="message"></param>
+        </member>
+        <member name="M:INTERPARKTOUR.UTIL.HelperCommon.RegisterLogForHelperSecurityForSecure(System.String)">
+            <summary>
+            INTERPARKTOUR.UTIL.HelperSecurity 에서 생성되는 ERROR 를 NLOG 로 등록합니다. ( XSS, Injection 시도 확인 용도 )
+            </summary>
+            <param name="message"></param>
+        </member>
+        <member name="M:INTERPARKTOUR.UTIL.HelperCommon.GenerateRandomString(System.Int32)">
+            <summary>
+            Random 문자열을 생성하여 반환합니다.
+            </summary>
+            <param name="length">반환될 문자열 길이</param>
+            <returns></returns>
+        </member>
+        <member name="M:INTERPARKTOUR.UTIL.HelperNetwork.GetClientIpAddress">
+            <summary>
+            Client 의 Ip Address 를 반환합니다.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:INTERPARKTOUR.UTIL.HelperNetwork.ValidationIpAddresInGroup(System.String,System.String)">
+            <summary>
+            2 개의 IP 를 비교하여 ipAddr2 가 ipAddr1 에 속하는지 여부를 반환합니다.
+            </summary>
+            <param name="ipAddr1">기준이 되는 Ip Addr</param>
+            <param name="ipAddr2">ipAddr1 에 종속되는 ip 인지 확인할 Ip Addr</param>
+            <returns>ture : ipAddr2 가 ipAddr1 에 종속 / false : ipAddr2 가 ipAddr1 에 종속되지 않음</returns>
+        </member>
+        <member name="M:INTERPARKTOUR.UTIL.HelperFile.GetJsWithVersionCode(System.String)">
+            <summary>
+            URL 경로에 ?v=20160818131300 과 같은 형태의 버전 번호가 결합된 문자열을 반환합니다.
+            </summary>
+            <param name="context">HttpContext</param>
+            <param name="fileNameOrUrl">Url 경로 ( ex : /global/js/sample.js Or http://TOUR.THETRAVEL.CO.KR/css/test.css )</param>
+            <returns></returns>
+        </member>
+        <member name="M:INTERPARKTOUR.UTIL.HelperFile.GetJsFileVersionWithCache(System.String,System.Boolean)">
+            <summary>
+            Cache 를 조회하여, Version 정보를 가져오거나 Cache 가 없을 경우 Version 정보를 생성하고 이를 반환합니다.
+            </summary>
+            <param name="context">HttpContext</param>
+            <param name="fileName">파일 경로 ( Url Path. ex : /global/js/sample.js )</param>
+            <param name="isFullUrl">상대 경로인지, http Full Url 인지 여부</param>
+            <returns>yyyyMMddhhmmss 형태의 Version Code. ex : 201608181023 </returns>
+        </member>
+        <member name="M:INTERPARKTOUR.UTIL.HelperFile.GetFileVersion(System.String,System.Boolean)">
+            <summary>
+            파일 물리적인 정보를 읽어와 yyyyMMddHHmmss 형태의 Version 정보를 반환합니다. ( Full Url 일 경우 현재 시각 기준으로 마킹 )
+            </summary>
+            <param name="fileName"></param>
+            <param name="isFullUrl"></param>
+            <returns></returns>
+        </member>
+    </members>
+</doc>

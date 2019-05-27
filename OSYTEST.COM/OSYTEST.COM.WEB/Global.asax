@@ -1,0 +1,1 @@
+﻿<%@ Application Language="C#" Codebehind="Global.cs" Inherits="TOUR.THETRAVEL.CO.KR.WEB.Global" %>
